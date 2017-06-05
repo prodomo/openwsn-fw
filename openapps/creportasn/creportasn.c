@@ -23,7 +23,7 @@
 
 /// inter-packet period (in ms)
 #define CREPORTASNPERIOD  20000
-#define PAYLOADLEN      17
+#define PAYLOADLEN      25
 
 const uint8_t creportasn_path0[] = "reportasn";
 
@@ -140,6 +140,19 @@ void creportasn_task_cb() {
    
    pkt->payload[15] = parentTx;
    pkt->payload[16] = parentTxACK;
+
+   //nancy add
+   // retrieve my prefix and EUI64
+    //myprefix                  = idmanager_getMyID(ADDR_PREFIX);
+   open_addr_t* myadd64;
+   myadd64 = idmanager_getMyID(ADDR_64B);
+
+    // set source address (me)
+    //pkt->l3_sourceAdd.type=ADDR_128B;
+    //memcpy(&(pkt->l3_sourceAdd.addr_128b[0]),myprefix->prefix,8);
+    //memcpy(&(pkt->l3_sourceAdd.addr_128b[8]),myadd64->addr_64b,8);
+    memcpy(&(pkt->payload[17]),myadd64->addr_64b,8);
+    //nancy addd end
 
    packetfunctions_reserveHeaderSize(pkt,1);
    pkt->payload[0] = COAP_PAYLOAD_MARKER;
