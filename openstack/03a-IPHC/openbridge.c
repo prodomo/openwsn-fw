@@ -7,12 +7,7 @@
 #include "openqueue.h"
 
 //=========================== variables =======================================
-typedef struct {
-   uint16_t port_src;
-   uint16_t port_dest;
-   uint16_t length; // this should not be here. See RFC6282 section 4.3.3.
-   uint16_t checksum;
-} udp_ht;
+
 //=========================== prototypes ======================================
 //=========================== public ==========================================
 
@@ -58,7 +53,7 @@ void openbridge_triggerData() {
       //payload
       packetfunctions_reserveHeaderSize(pkt,numDataBytes-8);
       memcpy(pkt->payload,&(input_buffer[8]),numDataBytes-8);
-
+      
       //this is to catch the too short packet. remove it after fw-103 is solved.
       if (numDataBytes<16){
               openserial_printError(COMPONENT_OPENBRIDGE,ERR_INVALIDSERIALFRAME,
@@ -95,77 +90,6 @@ void openbridge_receive(OpenQueueEntry_t* msg) {
    packetfunctions_reserveHeaderSize(msg,LENGTH_ADDR64b);
    memcpy(msg->payload,idmanager_getMyID(ADDR_64B)->addr_64b,LENGTH_ADDR64b);
    
-   // This is for reportASN (testing)
-   if(msg->payload[msg->length-17] == 84 && msg->payload[msg->length-16] == 102){
-      uint8_t asnArray[5];
-      ieee154e_getAsn(asnArray);
-
-      msg->payload[msg->length-10] = asnArray[0];
-      msg->payload[msg->length-9] = asnArray[1];
-      msg->payload[msg->length-8] = asnArray[2];
-      msg->payload[msg->length-7] = asnArray[3];
-      msg->payload[msg->length-6] = asnArray[4];
-
-      packetfunctions_tossHeader(msg, 39);
-
-      bool oneMore = FALSE;
-      // for some reason, it will have one more byte
-      if(msg->payload[0] != 22){
-        oneMore = TRUE;
-        packetfunctions_tossHeader(msg, 1);
-      }
-      msg->payload[6] = 0x00;
-      msg->payload[7] = 0x00;
-
-      uint8_t* checksum_ptr = &msg->payload[6];
-      uint8_t temp_checksum[2];
-      uint8_t little_helper[2];
-   
-      // initialize running checksum
-      temp_checksum[0]  = 0;
-      temp_checksum[1]  = 0;
-   
-      //===== IPv6 pseudo header
-   
-      // source address (prefix and EUI64)
-      onesComplementSum(temp_checksum,(idmanager_getMyID(ADDR_PREFIX))->prefix,8);
-      onesComplementSum(temp_checksum,(msg->payload-16),8);
-   
-      // destination address
-      uint8_t destArray[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
-      onesComplementSum(temp_checksum,(idmanager_getMyID(ADDR_PREFIX))->prefix,8);
-      onesComplementSum(temp_checksum,destArray,8);
-   
-      // length
-      little_helper[0] = msg->payload[4];
-      little_helper[1] = msg->payload[5];
-      onesComplementSum(temp_checksum,little_helper,2);
-   
-      // next header
-      little_helper[0] = 0;
-      little_helper[1] = IANA_UDP;
-      onesComplementSum(temp_checksum,little_helper,2);
-   
-      //===== payload
-
-      // reset the checksum currently in the payload
-      *checksum_ptr     = 0;
-      *(checksum_ptr+1) = 0;
-
-      onesComplementSum(temp_checksum,msg->payload,msg->length);
-      temp_checksum[0] ^= 0xFF;
-      temp_checksum[1] ^= 0xFF;
-
-      //write in packet
-      *checksum_ptr     = temp_checksum[0];
-      *(checksum_ptr+1) = temp_checksum[1];
-
-      packetfunctions_reserveHeaderSize(msg, 39);
-      if(oneMore == TRUE){
-        packetfunctions_reserveHeaderSize(msg, 1);
-      }
-   }
-
    // send packet over serial (will be memcopied into serial buffer)
    openserial_printData((uint8_t*)(msg->payload),msg->length);
    

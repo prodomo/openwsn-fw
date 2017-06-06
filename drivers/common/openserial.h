@@ -58,7 +58,6 @@ enum {
 #define SERFRAME_PC2MOTE_TRIGGERSERIALECHO       ((uint8_t)'S')
 #define SERFRAME_PC2MOTE_COMMAND                 ((uint8_t)'C')
 #define SERFRAME_PC2MOTE_TRIGGERUSERIALBRIDGE    ((uint8_t)'B')
-#define SERFRAME_PC2MOTE_ADDSCHEDULE             ((uint8_t)'Z')
 
 //=========================== typedef =========================================
 
@@ -127,6 +126,11 @@ owerror_t openserial_printStatus(
     uint8_t             statusElement,
     uint8_t*            buffer,
     uint8_t             length
+);
+owerror_t my_openserial_printStatus(
+    uint8_t 		statusElement,
+    uint8_t* 		buffer, 
+    uint8_t 		length
 );
 owerror_t openserial_printInfo(
     uint8_t             calling_component,

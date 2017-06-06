@@ -14,13 +14,12 @@
 #include "cstorm.h"
 #include "cwellknown.h"
 #include "rrt.h"
-#include "cgreen.h"
-#include "creportasn.h"
 // TCP
 #include "techo.h"
 // UDP
 #include "uecho.h"
 #include "uinject.h"
+#include "my_common.h"
 
 //=========================== variables =======================================
 
@@ -34,18 +33,15 @@ void openapps_init(void) {
    // CoAP
    c6t_init();
    cinfo_init();
-   cgreen_init();
    //cexample_init();
    cleds__init();
    cstorm_init();
    cwellknown_init();
    rrt_init();
-
-   creportasn_init();
    // TCP
    techo_init();
    // UDP
 //   uecho_init();
-
-   //cscheduled_init();
+   usaki_init();
+   uinject_init();
 }
