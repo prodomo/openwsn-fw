@@ -89,9 +89,7 @@ enum {
    //UDP
    WKP_UDP_COAP                        =    5683,
    WKP_UDP_ECHO                        =       7,
-   //WKP_UDP_INJECT                      =   61617,// 0xf0b1
-   WKP_UDP_INJECT                      =   2000,// Bruce 20170317
-   WKP_UDP_SAKI			       =   2424,
+   WKP_UDP_INJECT                      =   61617,// 0xf0b1
    WKP_UDP_RINGMASTER                  =   15000,
    WKP_UDP_SERIALBRIDGE                =    2001,
 };
@@ -169,7 +167,8 @@ enum {
    COMPONENT_RRT                       = 0x25,
    COMPONENT_SECURITY                  = 0x26,
    COMPONENT_USERIALBRIDGE             = 0x27,
-   COMPONENT_USAKI                     = 0x28,
+   COMPONENT_CGREEN                    = 0x28,
+   COMPONENT_CREPORTASN                = 0x29,
 };
 
 /**
@@ -349,6 +348,7 @@ typedef struct {
    uint8_t          numTxACK;
    uint8_t          numWraps;//number of times the tx counter wraps. can be removed if memory is a restriction. also check openvisualizer then.
    asn_t            asn;
+   asn_t            lastTxAsn;
    uint8_t          joinPrio;
    bool             f6PNORES;
 } neighborRow_t;

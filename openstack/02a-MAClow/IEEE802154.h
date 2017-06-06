@@ -37,6 +37,7 @@ enum IEEE802154_fcf_type_enums {
    IEEE154_TYPE_ACK                    = 2,
    IEEE154_TYPE_CMD                    = 3,
    IEEE154_TYPE_UNDEFINED              = 5,
+   IEEE154_TYPE_SENSED_DATA            = 6,
 };
 
 enum IEEE802154_fcf_sec_enums {

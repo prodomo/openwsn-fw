@@ -29,8 +29,7 @@
 void adc_sensor_init(void) {
    HWREG(CCTEST_TR0) |= CCTEST_TR0_ADCTM;
    HWREG(RFCORE_XREG_ATEST) = 0x01;
-   //SOCADCSingleConfigure(SOCADC_12_BIT, SOCADC_REF_INTERNAL);
-   SOCADCSingleConfigure(SOCADC_12_BIT, SOCADC_REF_AVDD5);
+   SOCADCSingleConfigure(SOCADC_12_BIT, SOCADC_REF_INTERNAL);
    adc_sens_read_temperature();
 }
 
@@ -61,33 +60,3 @@ float adc_sens_convert_temperature(uint16_t cputemp) {
 }
 
 //=========================== private =========================================
-
-uint16_t adc_sens_read_temperature_PA0(void) {
-   uint16_t ui16Dummy;
-
-   SOCADCSingleStart(SOCADC_AIN0);
-   while(!SOCADCEndOfCOnversionGet());
-   ui16Dummy = SOCADCDataGet() >> SOCADC_12_BIT_RSHIFT;
-   return ui16Dummy;
-}
-
-uint16_t adc_sens_read_temperature_PA1(void) {
-   uint16_t ui16Dummy;
-
-   SOCADCSingleStart(SOCADC_AIN1);
-   while(!SOCADCEndOfCOnversionGet());
-   ui16Dummy = SOCADCDataGet() >> SOCADC_12_BIT_RSHIFT;
-   return ui16Dummy;
-}
-
-uint16_t adc_sens_read_VDD_voltage(void) {
-   uint16_t ui16Dummy;
-
-   SOCADCSingleStart(SOCADC_VDD);
-   while(!SOCADCEndOfCOnversionGet());
-   ui16Dummy = SOCADCDataGet() >> SOCADC_12_BIT_RSHIFT;
-   return ui16Dummy;
-}
-
-
-

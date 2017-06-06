@@ -384,9 +384,16 @@ void sixtop_addORremoveCellByInfo(uint8_t code,open_addr_t* neighbor,cellInfo_ht
 
 owerror_t sixtop_send(OpenQueueEntry_t *msg) {
    
-   // set metadata
-   msg->owner        = COMPONENT_SIXTOP;
-   msg->l2_frameType = IEEE154_TYPE_DATA;
+  // set metadata
+  msg->owner        = COMPONENT_SIXTOP;
+
+  // If frameType have been set to 6, don't change it
+  if(msg->l2_frameType == IEEE154_TYPE_SENSED_DATA){
+    msg->l2_frameType = IEEE154_TYPE_SENSED_DATA;
+  }else{
+    msg->l2_frameType = IEEE154_TYPE_DATA;
+  }
+   
 
    // set l2-security attributes
    msg->l2_securityLevel   = IEEE802154_SECURITY_LEVEL;
@@ -537,6 +544,7 @@ void task_sixtopNotifReceive() {
     case IEEE154_TYPE_BEACON:
     case IEEE154_TYPE_DATA:
     case IEEE154_TYPE_CMD:
+    case IEEE154_TYPE_SENSED_DATA:
         if (msg->length>0) {
             // send to upper layer
             iphc_receive(msg);

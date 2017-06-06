@@ -23,6 +23,8 @@ ieee154e_vars_t    ieee154e_vars;
 ieee154e_stats_t   ieee154e_stats;
 ieee154e_dbg_t     ieee154e_dbg;
 
+//#define ADAPTIVE_SYNC
+
 //=========================== prototypes ======================================
 
 // SYNCHRONIZING
@@ -932,6 +934,11 @@ port_INLINE void activity_ti1ORri1() {
          if (schedule_getOkToSend()) {
             schedule_getNeighbor(&neighbor);
             ieee154e_vars.dataToSend = openqueue_macGetDataPacket(&neighbor);
+          
+            if(ieee154e_vars.dataToSend != NULL && (ieee154e_vars.dataToSend->creator == COMPONENT_CREPORTASN || ieee154e_vars.dataToSend->l2_frameType == IEEE154_TYPE_SENSED_DATA) && cellType == CELLTYPE_TXRX){
+               ieee154e_vars.dataToSend = NULL;   
+            }
+
             if ((ieee154e_vars.dataToSend==NULL) && (cellType==CELLTYPE_TXRX)) {
                couldSendEB=TRUE;
                // look for an EB packet in the queue
@@ -947,6 +954,7 @@ port_INLINE void activity_ti1ORri1() {
                changeToRX=TRUE;
             }
          } else {
+
             // change state
             changeState(S_TXDATAOFFSET);
             // change owner
@@ -1630,6 +1638,7 @@ port_INLINE void activity_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
       
       // if CRC doesn't check, stop
       if (ieee154e_vars.dataReceived->l1_crc==FALSE) {
+         // openserial_printError(66, 100, 0, 0);
          // jump to the error code below this do-while loop
          break;
       }
@@ -1669,7 +1678,13 @@ port_INLINE void activity_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
           ieee154e_processIEs(ieee154e_vars.dataReceived,&lenIE))==FALSE) {
           //log  that the packet is not carrying IEs
       }
-      
+
+      // if RX a frameType=6, log out.
+      // if(ieee802514_header.frameType == IEEE154_TYPE_GREEN){
+
+      //    openserial_printInfo(66, 88, ieee802514_header.frameType, ieee154e_vars.slotOffset);
+      //    openserial_printInfo(66, 89, ieee802514_header.src.type, ieee802514_header.src.addr_64b[7]);  
+      // }
      // toss the IEs including Synch
       packetfunctions_tossHeader(ieee154e_vars.dataReceived,lenIE);
             
@@ -1773,6 +1788,8 @@ port_INLINE void activity_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
    } while(0);
    
    // free the (invalid) received data so RAM memory can be recycled
+   // openserial_printError(66, 98, ieee154e_vars.slotOffset, ieee154e_vars.dataReceived->length);
+   // openserial_printError(66, 99, ieee154e_vars.dataReceived->l2_frameType, 0);
    openqueue_freePacketBuffer(ieee154e_vars.dataReceived);
    
    // clear local variable
@@ -1980,7 +1997,8 @@ port_INLINE bool isValidRxFrame(ieee802154_header_iht* ieee802514_header) {
    return ieee802514_header->valid==TRUE                                                           && \
           (
              ieee802514_header->frameType==IEEE154_TYPE_DATA                   ||
-             ieee802514_header->frameType==IEEE154_TYPE_BEACON
+             ieee802514_header->frameType==IEEE154_TYPE_BEACON                 ||
+             ieee802514_header->frameType==IEEE154_TYPE_SENSED_DATA
           )                                                                                        && \
           packetfunctions_sameAddress(&ieee802514_header->panid,idmanager_getMyID(ADDR_PANID))     && \
           (
@@ -2530,3 +2548,9 @@ void endSlot() {
 bool ieee154e_isSynch(){
    return ieee154e_vars.isSync;
 }
+
+void ieee154e_getNumDesync(uint8_t* numDesync){
+   *(numDesync) = ieee154e_stats.numDeSync;
+   return;
+}
+

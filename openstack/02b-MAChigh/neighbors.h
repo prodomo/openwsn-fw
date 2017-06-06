@@ -16,7 +16,7 @@
 #define BADNEIGHBORMAXRSSI        -80 //dBm
 #define GOODNEIGHBORMINRSSI       -90 //dBm
 #define SWITCHSTABILITYTHRESHOLD  3
-#define DEFAULTLINKCOST           15
+#define DEFAULTLINKCOST           1
 
 #define MAXDAGRANK                0xffff
 #define DEFAULTDAGRANK            MAXDAGRANK
@@ -93,18 +93,11 @@ void          neighbors_removeOld(void);
 // debug
 bool          debugPrint_neighbors(void);
 
+void          neighbors_getParentTxTxACK(uint8_t* numTx, uint8_t* numTxACK, uint8_t index);
+
 /**
 \}
 \}
 */
-
-// force migrate from old version, Bruce
-void neighbors_getNshortAddrnRSSI(uint8_t* ptr);
-bool my_neighbors_getTxTxAck(open_addr_t* macToCompare, uint8_t* numTx, uint8_t* numTxAck);
-
-static const uint8_t ipAddr_Root[] = {0xbb, 0xbb, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, \
-                                      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
-
-
 
 #endif

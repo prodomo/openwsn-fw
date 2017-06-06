@@ -27,8 +27,6 @@
 #include "radiotimer.h"
 #include "sensors.h"
 #include "uart.h"
-#include "ssi.h"
-#include "my_spi.h"
 
 //=========================== variables =======================================
 
@@ -39,8 +37,6 @@
 
 //=========================== prototypes ======================================
 
-extern uint16_t usaki_pulse_cnt;
-
 void board_timer_init(void);
 uint32_t board_timer_get(void);
 bool board_timer_expired(uint32_t future);
@@ -48,7 +44,6 @@ bool board_timer_expired(uint32_t future);
 static void clock_init(void);
 static void gpio_init(void);
 static void button_init(void);
-static void button_my_init(void);
 
 static void SysCtrlDeepSleepSetting(void);
 static void SysCtrlSleepSetting(void);
@@ -56,7 +51,6 @@ static void SysCtrlRunSetting(void);
 static void SysCtrlWakeupSetting(void);
 
 static void GPIO_C_Handler(void);
-static void GPIO_Cp3_Handler(void);
 
 //=========================== main ============================================
 
@@ -65,6 +59,7 @@ extern int mote_main(void);
 int main(void) {
    return mote_main();
 }
+
 //=========================== public ==========================================
 
 void board_init(void) {
@@ -74,15 +69,14 @@ void board_init(void) {
    board_timer_init();
 
    leds_init();
-   //debugpins_init();
-   //button_init();
+   debugpins_init();
+   button_init();
    bsp_timer_init();
    radiotimer_init();
    uart_init();
    radio_init();
    i2c_init();
    sensors_init();
-   button_my_init();
 }
 
 /**
@@ -147,14 +141,13 @@ void board_reset(void) {
 
 static void gpio_init(void) {
     /* Set GPIOs as output */
-    //GPIOPinTypeGPIOOutput(GPIO_A_BASE, 0xFF);
-    GPIOPinTypeGPIOInput(GPIO_A_BASE, 0xFF);
+    GPIOPinTypeGPIOOutput(GPIO_A_BASE, 0xFF);
     GPIOPinTypeGPIOOutput(GPIO_B_BASE, 0xFF);
     GPIOPinTypeGPIOOutput(GPIO_C_BASE, 0xFF);
     GPIOPinTypeGPIOOutput(GPIO_D_BASE, 0xFF);
 
     /* Initialize GPIOs to low */
-    //GPIOPinWrite(GPIO_A_BASE, 0xFF, 0x00);
+    GPIOPinWrite(GPIO_A_BASE, 0xFF, 0x00);
     GPIOPinWrite(GPIO_B_BASE, 0xFF, 0x00);
     GPIOPinWrite(GPIO_C_BASE, 0xFF, 0x00);
     GPIOPinWrite(GPIO_D_BASE, 0xFF, 0x00);
@@ -205,39 +198,16 @@ static void button_init(void) {
     for (i = 0xFFFF; i != 0; i--);
 
     /* The button is an input GPIO on falling edge */
-    GPIOPinTypeGPIOInput(BSP_BUTTON_BASE, BSP_BUTTON_USER);
-    GPIOIntTypeSet(BSP_BUTTON_BASE, BSP_BUTTON_USER, GPIO_FALLING_EDGE);
+    //GPIOPinTypeGPIOInput(BSP_BUTTON_BASE, BSP_BUTTON_USER);
+    //GPIOIntTypeSet(BSP_BUTTON_BASE, BSP_BUTTON_USER, GPIO_FALLING_EDGE);
 
     /* Register the interrupt */
     GPIOPortIntRegister(BSP_BUTTON_BASE, GPIO_C_Handler);
 
     /* Clear and enable the interrupt */
-    GPIOPinIntClear(BSP_BUTTON_BASE, BSP_BUTTON_USER);
-    GPIOPinIntEnable(BSP_BUTTON_BASE, BSP_BUTTON_USER);
+    //GPIOPinIntClear(BSP_BUTTON_BASE, BSP_BUTTON_USER);
+    //GPIOPinIntEnable(BSP_BUTTON_BASE, BSP_BUTTON_USER);
 }
-
-static void button_my_init(void) {
-    volatile uint32_t i;
-
-    // initial the debug led to on, should be PC6
-    leds_debug_on();
-
-    /* Delay to avoid pin floating problems */
-    for (i = 0xFFFF; i != 0; i--);
-
-    leds_debug_off();
-    /* The button is an input GPIO on falling edge */
-    GPIOPinTypeGPIOInput(BSP_BUTTON_BASE, BSP_BUTTON_USER);
-    GPIOIntTypeSet(BSP_BUTTON_BASE, BSP_BUTTON_USER, GPIO_FALLING_EDGE);
-
-    /* Register the interrupt */
-    GPIOPortIntRegister(BSP_BUTTON_BASE, GPIO_Cp3_Handler);
-
-    /* Clear and enable the interrupt */
-    GPIOPinIntClear(BSP_BUTTON_BASE, BSP_BUTTON_USER);
-    GPIOPinIntEnable(BSP_BUTTON_BASE, BSP_BUTTON_USER);
-}
-
 
 static void SysCtrlRunSetting(void) {
   /* Disable General Purpose Timers 0, 1, 2, 3 when running */
@@ -330,13 +300,3 @@ static void GPIO_C_Handler(void) {
     /* Reset the board */
     SysCtrlReset();
 }
-
-static void GPIO_Cp3_Handler(void) {
-    /* Disable the interrupts */
-    // real process
-    leds_debug_toggle();
-    usaki_pulse_cnt ++;
-
-    GPIOPinIntClear(BSP_BUTTON_BASE, BSP_BUTTON_USER);
-}
-
