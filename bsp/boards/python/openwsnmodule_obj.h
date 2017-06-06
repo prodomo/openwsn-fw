@@ -33,7 +33,6 @@
 #include "c6t_obj.h"
 #include "cexample_obj.h"
 #include "cinfo_obj.h"
-#include "cgreen_obj.h"
 #include "cleds_obj.h"
 #include "cstorm_obj.h"
 #include "cwellknown_obj.h"
@@ -42,7 +41,6 @@
 //#include "tohlone_obj.h"
 //#include "tohlone_obj.h"
 #include "uecho_obj.h"
-#include "creportasn_obj.h"
 
 //=========================== prototypes ======================================
 
@@ -250,8 +248,6 @@ struct OpenMote {
    cstorm_vars_t        cstorm_vars;
    cwellknown_vars_t    cwellknown_vars;
    rrt_vars_t           rrt_vars;
-   cgreen_vars_t         cgreen_vars;
-   creportasn_vars_t    creportasn_vars;
    //tohlone_vars_t       tohlone_vars;
 };
 

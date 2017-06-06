@@ -580,7 +580,7 @@ void schedule_advanceSlot() {
    if (schedule_vars.currentScheduleEntry->slotOffset >= ((scheduleEntry_t*)schedule_vars.currentScheduleEntry->next)->slotOffset
        ) {
        // one slotframe has elapsed
-       //sf0_notifyNewSlotframe();
+       sf0_notifyNewSlotframe();
    }   
    schedule_vars.currentScheduleEntry = schedule_vars.currentScheduleEntry->next;
    
@@ -850,18 +850,6 @@ void schedule_housekeeping(){
     }
    
     ENABLE_INTERRUPTS();
-}
-
-void schedule_resetAllDistributeCell(){
-  slotOffset_t    i;
-  open_addr_t       temp_neighbor;
-
-  for(i=0;i<MAXACTIVESLOTS;i++) {
-    if(schedule_vars.scheduleBuf[i].type == CELLTYPE_TX || schedule_vars.scheduleBuf[i].type == CELLTYPE_RX){
-      schedule_removeActiveSlot(schedule_vars.scheduleBuf[i].slotOffset, &(schedule_vars.scheduleBuf[i].neighbor));
-    }
-  }
-
 }
 
 //=========================== private =========================================
