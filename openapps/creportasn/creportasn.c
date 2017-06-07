@@ -23,7 +23,7 @@
 
 /// inter-packet period (in ms)
 #define CREPORTASNPERIOD  20000
-#define PAYLOADLEN      25
+#define PAYLOADLEN      20
 
 const uint8_t creportasn_path0[] = "reportasn";
 
@@ -55,6 +55,9 @@ void creportasn_init() {
    creportasn_vars.desc.callbackRx           = &creportasn_receive;
    creportasn_vars.desc.callbackSendDone     = &creportasn_sendDone;
    
+   creportasn_vars.creportasn_sequence = 0;
+   creportasn_vars.lastSuccessLeft = 0;
+   creportasn_vars.errorCounter = 0;
    
    opencoap_register(&creportasn_vars.desc);
    creportasn_vars.timerId    = opentimers_start(CREPORTASNPERIOD,
@@ -141,19 +144,13 @@ void creportasn_task_cb() {
    pkt->payload[15] = parentTx;
    pkt->payload[16] = parentTxACK;
 
-   //nancy add
-   // retrieve my prefix and EUI64
-    //myprefix                  = idmanager_getMyID(ADDR_PREFIX);
-   open_addr_t* myadd64;
-   myadd64 = idmanager_getMyID(ADDR_64B);
+   pkt->payload[17] = creportasn_vars.lastSuccessLeft;
+   pkt->payload[18] = creportasn_vars.errorCounter;
 
-    // set source address (me)
-    //pkt->l3_sourceAdd.type=ADDR_128B;
-    //memcpy(&(pkt->l3_sourceAdd.addr_128b[0]),myprefix->prefix,8);
-    //memcpy(&(pkt->l3_sourceAdd.addr_128b[8]),myadd64->addr_64b,8);
-    memcpy(&(pkt->payload[17]),myadd64->addr_64b,8);
-    //nancy addd end
+   creportasn_vars.creportasn_sequence++;
 
+   pkt->payload[19] = creportasn_vars.creportasn_sequence;
+   
    packetfunctions_reserveHeaderSize(pkt,1);
    pkt->payload[0] = COAP_PAYLOAD_MARKER;
    
@@ -195,5 +192,9 @@ void creportasn_task_cb() {
 }
 
 void creportasn_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
+   if(error == E_FAIL){
+      creportasn_vars.errorCounter++;
+   }
+   creportasn_vars.lastSuccessLeft = msg->l2_retriesLeft;
    openqueue_freePacketBuffer(msg);
 }
