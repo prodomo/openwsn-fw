@@ -1,9 +1,9 @@
 /**
-\brief An example CoAP application.
+\brief An report ASN CoAP application.
 */
 
 #include "opendefs.h"
-#include "cgreen.h"
+#include "creportasn.h"
 #include "opencoap.h"
 #include "opentimers.h"
 #include "openqueue.h"
@@ -14,167 +14,187 @@
 //#include "ADC_Channel.h"
 #include "idmanager.h"
 #include "IEEE802154E.h"
+#include "IEEE802154.h"
+
+#include "neighbors.h"
+#include "icmpv6rpl.h"
 
 //=========================== defines =========================================
 
-const uint8_t cgreen_path0[] = "green";
+/// inter-packet period (in ms)
+#define CREPORTASNPERIOD  20000
+#define PAYLOADLEN      20
+
+const uint8_t creportasn_path0[] = "reportasn";
 
 //=========================== variables =======================================
 
-cgreen_vars_t cgreen_vars;
+creportasn_vars_t creportasn_vars;
 
 //=========================== prototypes ======================================
 
-owerror_t cgreen_receive(OpenQueueEntry_t* msg,
+owerror_t creportasn_receive(OpenQueueEntry_t* msg,
                     coap_header_iht*  coap_header,
                     coap_option_iht*  coap_options);
-void    cgreen_sendDone(OpenQueueEntry_t* msg,
+void    creportasn_timer_cb(opentimer_id_t id);
+void    creportasn_task_cb(void);
+void    creportasn_sendDone(OpenQueueEntry_t* msg,
                        owerror_t error);
 
 //=========================== public ==========================================
 
-void cgreen_init() {
+void creportasn_init() {
    
-   // prepare the resource descriptor for the /g path
-   cgreen_vars.desc.path0len             = sizeof(cgreen_path0)-1;
-   cgreen_vars.desc.path0val             = (uint8_t*)(&cgreen_path0);
-   cgreen_vars.desc.path1len             = 0;
-   cgreen_vars.desc.path1val             = NULL;
-   cgreen_vars.desc.componentID          = COMPONENT_CEXAMPLE;
-   cgreen_vars.desc.discoverable         = TRUE;
-   cgreen_vars.desc.callbackRx           = &cgreen_receive;
-   cgreen_vars.desc.callbackSendDone     = &cgreen_sendDone;
+   // prepare the resource descriptor for the /ex path
+   creportasn_vars.desc.path0len             = sizeof(creportasn_path0)-1;
+   creportasn_vars.desc.path0val             = (uint8_t*)(&creportasn_path0);
+   creportasn_vars.desc.path1len             = 0;
+   creportasn_vars.desc.path1val             = NULL;
+   creportasn_vars.desc.componentID          = COMPONENT_CREPORTASN;
+   creportasn_vars.desc.discoverable         = TRUE;
+   creportasn_vars.desc.callbackRx           = &creportasn_receive;
+   creportasn_vars.desc.callbackSendDone     = &creportasn_sendDone;
    
+   creportasn_vars.creportasn_sequence = 0;
+   creportasn_vars.lastSuccessLeft = 0;
+   creportasn_vars.errorCounter = 0;
    
-   opencoap_register(&cgreen_vars.desc);
+   opencoap_register(&creportasn_vars.desc);
+   creportasn_vars.timerId    = opentimers_start(CREPORTASNPERIOD,
+                                                TIMER_PERIODIC,TIME_MS,
+                                                creportasn_timer_cb);
 }
 
 //=========================== private =========================================
 
-owerror_t cgreen_receive(OpenQueueEntry_t* msg,
+owerror_t creportasn_receive(OpenQueueEntry_t* msg,
                       coap_header_iht* coap_header,
                       coap_option_iht* coap_options) {
-   openserial_printInfo(COMPONENT_CGREEN, ERR_BOOTED, 0, 0);
-   owerror_t outcome;
-   
-   switch (coap_header->Code) {
-      case COAP_CODE_REQ_GET:
-         
-         //=== reset packet payload (we will reuse this packetBuffer)
-         msg->payload                     = &(msg->packet[127]);
-         msg->length                      = 0;
-         
-         //=== prepare  CoAP response
-         
-         // radio name
-         packetfunctions_reserveHeaderSize(msg,sizeof(infoRadioName)-1);
-         memcpy(&msg->payload[0],&infoRadioName,sizeof(infoRadioName)-1);
-         
-         // uC name
-         packetfunctions_reserveHeaderSize(msg,1);
-         msg->payload[0] = '\n';
-         packetfunctions_reserveHeaderSize(msg,sizeof(infouCName)-1);
-         memcpy(&msg->payload[0],&infouCName,sizeof(infouCName)-1);
-         
-         // board name
-         packetfunctions_reserveHeaderSize(msg,1);
-         msg->payload[0] = '\n';
-         packetfunctions_reserveHeaderSize(msg,sizeof(infoBoardname)-1);
-         memcpy(&msg->payload[0],&infoBoardname,sizeof(infoBoardname)-1);
-         
-         // stack name and version
-         packetfunctions_reserveHeaderSize(msg,1);
-         msg->payload[0] = '\n';
-         packetfunctions_reserveHeaderSize(msg,sizeof(infoStackName)-1+5);
-         memcpy(&msg->payload[0],&infoStackName,sizeof(infoStackName)-1);
-         msg->payload[sizeof(infoStackName)-1+5-5] = '0'+OPENWSN_VERSION_MAJOR;
-         msg->payload[sizeof(infoStackName)-1+5-4] = '.';
-         msg->payload[sizeof(infoStackName)-1+5-3] = '0'+OPENWSN_VERSION_MINOR;
-         msg->payload[sizeof(infoStackName)-1+5-2] = '.';
-         msg->payload[sizeof(infoStackName)-1+5-1] = '0'+OPENWSN_VERSION_PATCH;
-         
-         // payload marker
-         packetfunctions_reserveHeaderSize(msg,1);
-         msg->payload[0] = COAP_PAYLOAD_MARKER;
-         
-         // set the CoAP header
-         coap_header->Code                = COAP_CODE_RESP_CONTENT;
-         
-         outcome                          = E_SUCCESS;
-         break;
-      case COAP_CODE_REQ_POST:
-         // try sending data
-         // openserial_printInfo(COMPONENT_CGREEN, ERR_BUSY_RECEIVING, 1, 0);
-         
-         // test if need reset
-         if(msg->payload[0] == (1 << 7)){
-            schedule_resetAllDistributeCell();
-         }
-         
-         //get entry count;
-         uint8_t entryCount = msg->payload[1];
-         // openserial_printInfo(COMPONENT_CGREEN, ERR_UNSUPPORTED_COMMAND, entryCount, 0);
-         for(int i=0; i<entryCount; i++){
-            uint8_t baseOffset = i*11+2;
-            // openserial_printInfo(COMPONENT_CGREEN, ERR_MSG_UNKNOWN_TYPE, baseOffset, 0);
-            open_addr_t     temp_neighbor;
-            memset(&temp_neighbor,0,sizeof(temp_neighbor));
-            temp_neighbor.type = ADDR_64B;
-            uint8_t slotOffset = msg->payload[baseOffset];
-            uint8_t channelOffset = msg->payload[baseOffset+1];
-            uint8_t cellType = msg->payload[baseOffset+2];
-            for(int j=0; j<8; j++){
-               temp_neighbor.addr_64b[j] = msg->payload[baseOffset+3+j];
-            }
-            
-            if(cellType==(1<<6)){  //1 TX 0 RX
-               cellType = CELLTYPE_TX;
-            }else{
-               cellType = CELLTYPE_RX;
-            }
-            schedule_addActiveSlot(
-               slotOffset,                    // slot offset
-               cellType,                     // type of slot
-               FALSE,                                 // shared?
-               channelOffset,                                     // channel offset
-               &temp_neighbor                         // neighbor
-            );
-         }
-         
-         msg->payload                     = &(msg->packet[127]);
-         msg->length                      = 0;
-         coap_header->Code                = COAP_CODE_RESP_CONTENT;
-         
-         outcome                          = E_SUCCESS;
-
-         break;
-      case COAP_CODE_REQ_DELETE:
-         // new method
-         // openserial_printInfo(COMPONENT_CGREEN, ERR_INVALIDSERIALFRAME, 0, 0);
-         //reset packet
-         msg->payload                     = &(msg->packet[127]);
-         msg->length                      = 0;
-
-
-         char messageToSend[] = "Hello from Green.";
-
-         packetfunctions_reserveHeaderSize(msg, sizeof(messageToSend)-1);
-         memcpy(&msg->payload[0], &messageToSend, sizeof(messageToSend)-1);
-         packetfunctions_reserveHeaderSize(msg,1);
-         msg->payload[0] = COAP_PAYLOAD_MARKER;
-         coap_header->Code                = COAP_CODE_RESP_CONTENT;
-         
-         outcome                          = E_SUCCESS;
-
-         break;
-      default:
-         // return an error message
-         outcome = E_FAIL;
-   }
-   
-   return outcome;
+   return E_FAIL;
 }
 
-void cgreen_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
+//timer fired, but we don't want to execute task in ISR mode
+//instead, push task to scheduler with COAP priority, and let scheduler take care of it
+void creportasn_timer_cb(opentimer_id_t id){
+   scheduler_push_task(creportasn_task_cb,TASKPRIO_COAP);
+}
+
+void creportasn_task_cb() {
+   OpenQueueEntry_t*    pkt;
+   owerror_t            outcome;
+   
+   // don't run if not synch
+   if (ieee154e_isSynch() == FALSE) return;
+   
+   // don't run on dagroot
+   if (idmanager_getIsDAGroot()) {
+      //opentimers_stop(creportasn_vars.timerId);
+      openserial_printError(123,66,
+                            (errorparameter_t)0,
+                            (errorparameter_t)0);
+      return;
+   }
+
+   openqueue_removeAllCreatedBy(COMPONENT_CREPORTASN);
+
+   // create a CoAP RD packet
+   pkt = openqueue_getFreePacketBuffer(COMPONENT_CREPORTASN);
+   if (pkt==NULL) {
+      openserial_printError(
+         COMPONENT_CREPORTASN,
+         ERR_NO_FREE_PACKET_BUFFER,
+         (errorparameter_t)0,
+         (errorparameter_t)0
+      );
+      openqueue_freePacketBuffer(pkt);
+      return;
+   }
+   // take ownership over that packet
+   pkt->creator                   = COMPONENT_CREPORTASN;
+   pkt->owner                     = COMPONENT_CREPORTASN;
+   // CoAP payload
+   packetfunctions_reserveHeaderSize(pkt,PAYLOADLEN);
+   // speacial flag
+   pkt->payload[0] = 0x54;
+   pkt->payload[1] = 0x66;
+
+   // append asn
+   uint8_t* pointer = &pkt->payload[2];
+   ieee154e_getAsn(pointer);
+
+   uint8_t numDeSync;
+   ieee154e_getNumDesync(&numDeSync);
+
+   pkt->payload[12] = numDeSync;
+
+   uint16_t myRank = icmpv6rpl_getMyDAGrank();
+
+   memcpy(&pkt->payload[13], &myRank, sizeof(myRank));
+
+   uint8_t parentIndex;
+
+
+   icmpv6rpl_getPreferredParentIndex(&parentIndex);
+
+   neighborRow_t parentRow;
+   uint8_t parentTx;
+   uint8_t parentTxACK;
+   neighbors_getParentTxTxACK(&parentTx, &parentTxACK, parentIndex);
+   
+   pkt->payload[15] = parentTx;
+   pkt->payload[16] = parentTxACK;
+
+   pkt->payload[17] = creportasn_vars.lastSuccessLeft;
+   pkt->payload[18] = creportasn_vars.errorCounter;
+
+   creportasn_vars.creportasn_sequence++;
+
+   pkt->payload[19] = creportasn_vars.creportasn_sequence;
+   
+   packetfunctions_reserveHeaderSize(pkt,1);
+   pkt->payload[0] = COAP_PAYLOAD_MARKER;
+   
+
+   // content-type option
+   packetfunctions_reserveHeaderSize(pkt,2);
+   pkt->payload[0]                = (COAP_OPTION_NUM_CONTENTFORMAT - COAP_OPTION_NUM_URIPATH) << 4
+                                    | 1;
+   pkt->payload[1]                = COAP_MEDTYPE_APPOCTETSTREAM;
+   // location-path option
+
+   packetfunctions_reserveHeaderSize(pkt,sizeof(creportasn_path0)-1);
+   memcpy(&pkt->payload[0],creportasn_path0,sizeof(creportasn_path0)-1);
+   packetfunctions_reserveHeaderSize(pkt,1);
+   pkt->payload[0]                = ((COAP_OPTION_NUM_URIPATH) << 4) | (sizeof(creportasn_path0)-1);
+   
+   // metadata
+   pkt->l4_destination_port       = WKP_UDP_COAP;
+   pkt->l3_destinationAdd.type    = ADDR_128B;
+   memcpy(&pkt->l3_destinationAdd.addr_128b[0],&ipAddr_ringmaster,16);
+   
+   pkt->l2_frameType = IEEE154_TYPE_SENSED_DATA;
+
+   // send
+   outcome = opencoap_send(
+      pkt,
+      COAP_TYPE_NON,
+      COAP_CODE_REQ_PUT,
+      1,
+      &creportasn_vars.desc
+   );
+   
+   // avoid overflowing the queue if fails
+   if (outcome==E_FAIL) {
+      openqueue_freePacketBuffer(pkt);
+   }
+   
+   return;
+}
+
+void creportasn_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
+   if(error == E_FAIL){
+      creportasn_vars.errorCounter++;
+   }
+   creportasn_vars.lastSuccessLeft = msg->l2_retriesLeft;
    openqueue_freePacketBuffer(msg);
 }
