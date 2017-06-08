@@ -19,13 +19,17 @@
 #include "neighbors.h"
 #include "icmpv6rpl.h"
 
+//#include "my_spi.h"
+//#include "adc_sensor.h"
+
 //=========================== defines =========================================
 
 /// inter-packet period (in ms)
 #define CREPORTASNPERIOD  20000
-#define PAYLOADLEN      20
+#define PAYLOADLEN      32
 
 const uint8_t creportasn_path0[] = "reportasn";
+uint16_t usaki_pulse_cnt=0; 
 
 //=========================== variables =======================================
 
@@ -58,7 +62,14 @@ void creportasn_init() {
    creportasn_vars.creportasn_sequence = 0;
    creportasn_vars.lastSuccessLeft = 0;
    creportasn_vars.errorCounter = 0;
-   
+
+   creportasn_vars.counter = 0;
+   creportasn_vars.int_temp = 0;
+   creportasn_vars.ext_temp = 0;
+   creportasn_vars.ext_pyra = 0;
+   creportasn_vars.int_volt = 0;
+   creportasn_vars.gpio_pulse = 0;
+      
    opencoap_register(&creportasn_vars.desc);
    creportasn_vars.timerId    = opentimers_start(CREPORTASNPERIOD,
                                                 TIMER_PERIODIC,TIME_MS,
@@ -151,6 +162,34 @@ void creportasn_task_cb() {
 
    pkt->payload[19] = creportasn_vars.creportasn_sequence;
    
+   //nancy add
+   creportasn_vars.ext_pyra = 1;
+   creportasn_vars.ext_temp = 2;
+   creportasn_vars.int_temp = 3;
+   creportasn_vars.int_volt = 4;
+   creportasn_vars.gpio_pulse = 5;
+   // usaki_vars.ext_pyra = adc_sens_read_temperature_PA0();
+   // // show external temp
+   // usaki_vars.ext_temp = adc_sens_read_temperature_PA1();
+   // // show inner temp
+   // usaki_vars.int_temp = adc_sens_read_temperature();
+   // // show voltage
+   // usaki_vars.int_volt = adc_sens_read_VDD_voltage();
+   // // get pulse count on gpio
+   // usaki_vars.gpio_pulse = usaki_pulse_cnt;
+
+   *((uint16_t*)&pkt->payload[20]) = creportasn_vars.counter++;
+   *((uint16_t*)&pkt->payload[22]) = creportasn_vars.int_temp;
+   *((uint16_t*)&pkt->payload[24]) = creportasn_vars.ext_temp;
+   *((uint16_t*)&pkt->payload[26]) = creportasn_vars.ext_pyra;
+   *((uint16_t*)&pkt->payload[28]) = creportasn_vars.int_volt;
+   *((uint16_t*)&pkt->payload[30]) = creportasn_vars.gpio_pulse;
+
+
+   //nancy end
+
+
+
    packetfunctions_reserveHeaderSize(pkt,1);
    pkt->payload[0] = COAP_PAYLOAD_MARKER;
    
