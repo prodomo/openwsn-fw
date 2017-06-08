@@ -27,10 +27,10 @@
    \brief Initialize the sensor
 */
 void adc_sensor_init(void) {
-   // HWREG(CCTEST_TR0) |= CCTEST_TR0_ADCTM;
-   // HWREG(RFCORE_XREG_ATEST) = 0x01;
-   // //SOCADCSingleConfigure(SOCADC_12_BIT, SOCADC_REF_INTERNAL);
-   // SOCADCSingleConfigure(SOCADC_12_BIT, SOCADC_REF_AVDD5);
+   HWREG(CCTEST_TR0) |= CCTEST_TR0_ADCTM;
+   HWREG(RFCORE_XREG_ATEST) = 0x01;
+   //SOCADCSingleConfigure(SOCADC_12_BIT, SOCADC_REF_INTERNAL);
+   SOCADCSingleConfigure(SOCADC_12_BIT, SOCADC_REF_AVDD5);
    adc_sens_read_temperature();
 }
 
@@ -41,9 +41,10 @@ void adc_sensor_init(void) {
 uint16_t adc_sens_read_temperature(void) {
    uint16_t ui16Dummy;
 
-   // SOCADCSingleStart(SOCADC_TEMP_SENS);
-   // while(!SOCADCEndOfCOnversionGet());
-   // ui16Dummy = SOCADCDataGet() >> SOCADC_12_BIT_RSHIFT;
+   SOCADCSingleStart(SOCADC_TEMP_SENS);
+   while(!SOCADCEndOfCOnversionGet());
+   ui16Dummy = SOCADCDataGet() >> SOCADC_12_BIT_RSHIFT;
+   // ui16Dummy =256;
    return ui16Dummy;
 }
 
@@ -65,27 +66,30 @@ float adc_sens_convert_temperature(uint16_t cputemp) {
 uint16_t adc_sens_read_temperature_PA0(void) {
    uint16_t ui16Dummy;
 
-   // SOCADCSingleStart(SOCADC_AIN0);
-   // while(!SOCADCEndOfCOnversionGet());
-   // ui16Dummy = SOCADCDataGet() >> SOCADC_12_BIT_RSHIFT;
+   SOCADCSingleStart(SOCADC_AIN0);
+   while(!SOCADCEndOfCOnversionGet());
+   ui16Dummy = SOCADCDataGet() >> SOCADC_12_BIT_RSHIFT;
+   // ui16Dummy = 258;
    return ui16Dummy;
 }
 
 uint16_t adc_sens_read_temperature_PA1(void) {
    uint16_t ui16Dummy;
 
-   // SOCADCSingleStart(SOCADC_AIN1);
-   // while(!SOCADCEndOfCOnversionGet());
-   // ui16Dummy = SOCADCDataGet() >> SOCADC_12_BIT_RSHIFT;
+   SOCADCSingleStart(SOCADC_AIN1);
+   while(!SOCADCEndOfCOnversionGet());
+   ui16Dummy = SOCADCDataGet() >> SOCADC_12_BIT_RSHIFT;
+   // ui16Dummy = 257;
    return ui16Dummy;
 }
 
 uint16_t adc_sens_read_VDD_voltage(void) {
    uint16_t ui16Dummy;
 
-   // SOCADCSingleStart(SOCADC_VDD);
-   // while(!SOCADCEndOfCOnversionGet());
-   // ui16Dummy = SOCADCDataGet() >> SOCADC_12_BIT_RSHIFT;
+   SOCADCSingleStart(SOCADC_VDD);
+   while(!SOCADCEndOfCOnversionGet());
+   ui16Dummy = SOCADCDataGet() >> SOCADC_12_BIT_RSHIFT;
+   // ui16Dummy = 259;
    return ui16Dummy;
 }
 

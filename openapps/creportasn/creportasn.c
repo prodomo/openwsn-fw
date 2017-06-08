@@ -20,7 +20,7 @@
 #include "icmpv6rpl.h"
 
 //#include "my_spi.h"
-//#include "adc_sensor.h"
+#include "adc_sensor.h"
 
 //=========================== defines =========================================
 
@@ -29,7 +29,7 @@
 #define PAYLOADLEN      32
 
 const uint8_t creportasn_path0[] = "reportasn";
-uint16_t reportasn_pulse_cnt=0; 
+uint16_t creportasn_pulse_cnt=0; 
 
 //=========================== variables =======================================
 
@@ -163,20 +163,20 @@ void creportasn_task_cb() {
    pkt->payload[19] = creportasn_vars.creportasn_sequence;
    
    //nancy add
-   creportasn_vars.int_temp = 256;
-   creportasn_vars.ext_temp = 257;
-   creportasn_vars.ext_pyra = 258;
-   creportasn_vars.int_volt = 259;
-   creportasn_vars.gpio_pulse =230;
-   // // show inner temp
-   // creportasn_vars.int_temp = adc_sens_read_temperature();
-   // // show external temp
-   // creportasn_vars.ext_temp = adc_sens_read_temperature_PA1();
-   // creportasn_vars.ext_pyra = adc_sens_read_temperature_PA0();
-   // // show voltage
-   // creportasn_vars.int_volt = adc_sens_read_VDD_voltage();
-   // // get pulse count on gpio
-   // creportasn_vars.gpio_pulse = reportasn_pulse_cnt;
+   // creportasn_vars.int_temp = 256;
+   // creportasn_vars.ext_temp = 257;
+   // creportasn_vars.ext_pyra = 258;
+   // creportasn_vars.int_volt = 259;
+   // creportasn_vars.gpio_pulse =230;
+   // show inner temp
+   creportasn_vars.int_temp = adc_sens_read_temperature();
+   // show external temp
+   creportasn_vars.ext_temp = adc_sens_read_temperature_PA1();
+   creportasn_vars.ext_pyra = adc_sens_read_temperature_PA0();
+   // show voltage
+   creportasn_vars.int_volt = adc_sens_read_VDD_voltage();
+   // get pulse count on gpio
+   creportasn_vars.gpio_pulse = creportasn_pulse_cnt;
 
    *((uint16_t*)&pkt->payload[20]) = creportasn_vars.counter++;
    *((uint16_t*)&pkt->payload[22]) = creportasn_vars.int_temp;
