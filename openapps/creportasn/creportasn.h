@@ -23,7 +23,7 @@ typedef struct {
    uint16_t             ext_temp;
    uint16_t             ext_pyra;
    uint16_t             int_volt;
-   uint16_t				gpio_pulse;
+   uint16_t				   gpio_pulse;
 } creportasn_vars_t;
 
 //=========================== variables =======================================
