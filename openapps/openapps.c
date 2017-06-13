@@ -21,6 +21,7 @@
 // UDP
 #include "uecho.h"
 #include "uinject.h"
+#include "uinject_coap.h"
 
 //=========================== variables =======================================
 
@@ -41,6 +42,7 @@ void openapps_init(void) {
    cwellknown_init();
    rrt_init();
 
+   uinject_coap_init();
    creportasn_init();
    // TCP
    techo_init();

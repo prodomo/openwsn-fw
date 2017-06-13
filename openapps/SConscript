@@ -18,7 +18,8 @@ defaultApps   = [
     'userialbridge',
     'rrt',
     'cgreen',
-    'creportasn'
+    'creportasn',
+    'uinject_coap'
 ]
 if localEnv['board']=='python':
     defaultApps  += [
@@ -37,7 +38,8 @@ defaultAppsInit   = [
     'uecho',
     'rrt',
     'cgreen',
-    'creportasn'
+    'creportasn',
+    'uinject_coap'
 ]
 
 # additional apps the user wants to build

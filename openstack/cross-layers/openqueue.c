@@ -242,7 +242,7 @@ OpenQueueEntry_t* openqueue_macGetDataPacket(open_addr_t* toNeighbor) {
                 )
              )
             ) {
-              if(openqueue_vars.queue[i].creator == COMPONENT_CREPORTASN){
+              if(openqueue_vars.queue[i].creator == COMPONENT_CREPORTASN || openqueue_vars.queue[i].creator == COMPONENT_UINJECT_COAP){
                 continue;
               }
             ENABLE_INTERRUPTS();
