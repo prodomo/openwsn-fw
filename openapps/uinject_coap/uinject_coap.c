@@ -63,22 +63,22 @@ bool isAck(void){
     return FALSE;
 }
 
-// void alarm_on(){
-//    //opentimers_stop(buzz_timer);
+ void alarm_on(){
+    //opentimers_stop(buzz_timer);
 
-//    opentimers_restart(buzz_timer);
-// }
+    opentimers_restart(buzz_timer);
+ }
 
-// void alarm_off(){
+ void alarm_off(){
   
 //   opentimers_stop(buzz_timer);
-//   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
   
-// }
+ }
 
 void uinject_coap_init()
 {
@@ -110,10 +110,10 @@ void uinject_coap_init()
 
    PC2_alarm_on = 0;
 
-   // buzz_timer = opentimers_start(
-   //    100,
-   //    TIMER_PERIODIC,TIME_MS,
-   //    usaki_buzz_timer_cb);
+   buzz_timer = opentimers_start(
+      100,
+      TIMER_PERIODIC,TIME_MS,
+      usaki_buzz_timer_cb);
 
    GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
    GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
@@ -128,8 +128,8 @@ void uinject_coap_init()
 owerror_t uinject_coap_receive(OpenQueueEntry_t* msg) {
 // //   uint16_t          temp_l4_destination_port;
 // //   OpenQueueEntry_t* reply;
-//    uint8_t rcv_cmd;
-//    uinject_coap_recv_t * pkt = request->payload;
+    uint8_t rcv_cmd;
+    uinject_recv_t * pkt = (uinject_recv_t*) msg->payload;
 //    const uint8_t uinject_info[] = "ITRI MOTE";
 //    uint16_t serialNum;
 // /*
@@ -165,9 +165,9 @@ owerror_t uinject_coap_receive(OpenQueueEntry_t* msg) {
 //       openqueue_freePacketBuffer(reply);
 //    }
 // */
-//    rcv_cmd = pkt->cmdType;
+   rcv_cmd = pkt->cmdType;
 
-//    switch(rcv_cmd){
+   switch(rcv_cmd){
 //       case UINJECT_GET_INFO:
 //       	break;
 //       case UINJECT_SET_PARENTS:
@@ -205,21 +205,21 @@ owerror_t uinject_coap_receive(OpenQueueEntry_t* msg) {
 //         uinject_vars.usaki_period_time_code = pkt->serialNumL;
 //         leds_debug_toggle();
 //       	break;
-//       case UALERT_SET_ON:
-//         //alarm_on();
-// 		PC2_alarm_on = 1;	
-//       	break;
-//       case UALERT_SET_OFF:
-//         //alarm_off();
-// 		PC2_alarm_on = 0;	
-//      	break;
-//       default:
-//         leds_debug_toggle();
-//    }
+      case UALERT_SET_ON:
+        //alarm_on();
+		PC2_alarm_on = 1;	
+      	break;
+      case UALERT_SET_OFF:
+        //alarm_off();
+		PC2_alarm_on = 0;	
+     	break;
+      default:
+        //leds_debug_toggle();
+   }
 
 //    //openserial_printData(rcv_dataa, 3);
 
-//    openqueue_freePacketBuffer(request);
+    openqueue_freePacketBuffer(msg);
 
 
 //    // openqueue_freePacketBuffer(pkt);
@@ -478,28 +478,28 @@ void uinject_coap_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
 
 //===========================uaski_buzz===============================
 
-// void usaki_buzz_timer_cb(opentimer_id_t id){
+void usaki_buzz_timer_cb(opentimer_id_t id){
 
-//    scheduler_push_task(usaki_buzz_task_cb,TASKPRIO_COAP);
-// }
+   scheduler_push_task(usaki_buzz_task_cb,TASKPRIO_COAP);
+}
 
-// void usaki_buzz_task_cb(){
+void usaki_buzz_task_cb(){
 
-// 	// periodically low/high to PC2
-//   if (PC2_alarm_on == 1){
-//     if (PC2_status){
-//       // set high
-//       GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//       PC2_status = 0;
-//     }else{
-//       // set low
-//       GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, 0);
-//       PC2_status = 1;
-//     }
-//   }else{
-//     GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//   }
-// }
+	// periodically low/high to PC2
+  if (PC2_alarm_on == 1){
+    if (PC2_status){
+      // set high
+      GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+      PC2_status = 0;
+    }else{
+      // set low
+      GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, 0);
+      PC2_status = 1;
+    }
+  }else{
+    GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+  }
+}
 
 // int usaki_change_upload_time(uint8_t new_time_code, opentimer_id_t id){
 //   uint32_t new_duration;
