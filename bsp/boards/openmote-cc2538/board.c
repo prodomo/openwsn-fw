@@ -69,7 +69,7 @@ void board_init(void) {
    board_timer_init();
 
    leds_init();
-   debugpins_init();
+   //debugpins_init();
    button_init();
    bsp_timer_init();
    radiotimer_init();
@@ -147,10 +147,13 @@ static void gpio_init(void) {
     GPIOPinTypeGPIOOutput(GPIO_D_BASE, 0xFF);
 
     /* Initialize GPIOs to low */
-    GPIOPinWrite(GPIO_A_BASE, 0xFF, 0x00);
+    //GPIOPinWrite(GPIO_A_BASE, 0xFF, 0x00);
     GPIOPinWrite(GPIO_B_BASE, 0xFF, 0x00);
     GPIOPinWrite(GPIO_C_BASE, 0xFF, 0x00);
     GPIOPinWrite(GPIO_D_BASE, 0xFF, 0x00);
+    
+    // control beep pin
+    GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
 }
 
 static void clock_init(void) {
