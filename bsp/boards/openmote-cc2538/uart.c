@@ -60,10 +60,10 @@ void uart_init() {
 
    // Map UART signals to the correct GPIO pins and configure them as
    // hardware controlled. GPIO-A pin 0 and 1
-   IOCPinConfigPeriphOutput(GPIO_A_BASE, PIN_UART_TXD, IOC_MUX_OUT_SEL_UART0_TXD);
-   GPIOPinTypeUARTOutput(GPIO_A_BASE, PIN_UART_TXD);
-   IOCPinConfigPeriphInput(GPIO_A_BASE, PIN_UART_RXD, IOC_UARTRXD_UART0);
-   GPIOPinTypeUARTInput(GPIO_A_BASE, PIN_UART_RXD);
+   IOCPinConfigPeriphOutput(GPIO_C_BASE, PIN_UART_TXD, IOC_MUX_OUT_SEL_UART0_TXD);
+   GPIOPinTypeUARTOutput(GPIO_C_BASE, PIN_UART_TXD);
+   IOCPinConfigPeriphInput(GPIO_C_BASE, PIN_UART_RXD, IOC_UARTRXD_UART0);
+   GPIOPinTypeUARTInput(GPIO_C_BASE, PIN_UART_RXD);
 
    // Configure the UART for 115,200, 8-N-1 operation.
    // This function uses SysCtrlClockGet() to get the system clock
