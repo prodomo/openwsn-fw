@@ -25,7 +25,7 @@
 //=========================== defines =========================================
 
 /// inter-packet period (in ms)
-#define CREPORTASNPERIOD  20000
+#define CREPORTASNPERIOD  40000
 #define PAYLOADLEN      32
 
 const uint8_t creportasn_path0[] = "reportasn";
