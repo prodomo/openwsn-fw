@@ -26,7 +26,7 @@
 //=========================== defines =========================================
 
 // inter-packet period (in ms)
-// #define UINJECT_COAPPERIOD  		40000
+#define UINJECT_COAPPERIOD  		40000
 // #define PAYLOADLEN      			20
 
 // #define UHURRICANEPAYLOADLEN      	49
@@ -100,7 +100,7 @@ void uinject_coap_init()
    uinject_coap_vars.reTxNum = 0;
    uinject_coap_vars.counter = 1;
    uinject_coap_vars.rtnCounter = 0;
-   uinject_coap_vars.uinject_period_time = UPLOAD_PERIOD_TIME_5MS;
+   uinject_coap_vars.uinject_period_time = UINJECT_COAPPERIOD;
    uinject_coap_vars.uinject_period_time_code = UINJECT_SET_ULTIME_5_ABS;
 
    opencoap_register(&uinject_coap_vars.desc);
