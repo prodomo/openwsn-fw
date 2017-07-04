@@ -26,7 +26,7 @@
 //=========================== defines =========================================
 
 // inter-packet period (in ms)
-#define UINJECT_COAPPERIOD  		40000
+
 // #define PAYLOADLEN      			20
 
 // #define UHURRICANEPAYLOADLEN      	49
@@ -49,34 +49,37 @@ void usaki_buzz_task_cb(void);
 //=========================== public ==========================================
 // bool isAck(void){
   
+
 //   if (uinject_coap_vars.rtnCounter == uinject_coap_vars.counter)
 //     return TRUE;
 //   else
 //     return FALSE;
 // }
 
-// void alarm_on(){
-//    //opentimers_stop(buzz_timer);
 
-//    opentimers_restart(buzz_timer);
-// }
+//  void alarm_on(){
+//     //opentimers_stop(buzz_timer);
 
-// void alarm_off(){
+
+//     opentimers_restart(buzz_timer);
+//  }
+
+
+//  void alarm_off(){
   
-//   opentimers_stop(buzz_timer);
-//   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-//   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+// //   opentimers_stop(buzz_timer);
+//    GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+//    GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+//    GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+//    GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+//    GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
   
-// }
+//  }
 
 void uinject_coap_init()
 {
 	   // clear local variables
    // memset(&uinject_coap_vars,0,sizeof(uinject_coap_vars_t));
-
 	  //  // prepare the resource descriptor for the /ex path
    // uinject_coap_vars.desc.path0len             = sizeof(uinject_coap_path0)-1;
    // uinject_coap_vars.desc.path0val             = (uint8_t*)(&uinject_coap_path0);
@@ -86,27 +89,13 @@ void uinject_coap_init()
    // uinject_coap_vars.desc.discoverable         = TRUE;
    // uinject_coap_vars.desc.callbackRx           = &uinject_coap_receive;
    // uinject_coap_vars.desc.callbackSendDone     = &uinject_coap_sendDone;
-
-   // // initial some variables
-   // uinject_coap_vars.needAck = FALSE;
-   // uinject_coap_vars.reTxNum = 0;
-   // uinject_coap_vars.counter = 1;
-   // uinject_coap_vars.rtnCounter = 0;
-   // uinject_coap_vars.uinject_period_time = UINJECT_COAPPERIOD;
-   // uinject_coap_vars.uinject_period_time_code = UINJECT_SET_ULTIME_5_ABS;
-
    // opencoap_register(&uinject_coap_vars.desc);
    // uinject_coap_vars.timerId    = opentimers_start(uinject_coap_vars.uinject_period_time,
    //                                              TIMER_PERIODIC,TIME_MS,
    //                                              uinject_coap_timer_cb);
 
+
    // PC2_alarm_on = 0;
-
-   // // buzz_timer = opentimers_start(
-   // //    100,
-   // //    TIMER_PERIODIC,TIME_MS,
-   // //    usaki_buzz_timer_cb);
-
    // GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
    // GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
    // GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
@@ -120,8 +109,8 @@ void uinject_coap_init()
 owerror_t uinject_coap_receive(OpenQueueEntry_t* msg) {
 // //   uint16_t          temp_l4_destination_port;
 // //   OpenQueueEntry_t* reply;
-//    uint8_t rcv_cmd;
-//    uinject_coap_recv_t * pkt = request->payload;
+    // uint8_t rcv_cmd;
+    // uinject_recv_t * pkt = (uinject_recv_t*) msg->payload;
 //    const uint8_t uinject_info[] = "ITRI MOTE";
 //    uint16_t serialNum;
 // /*
@@ -157,9 +146,9 @@ owerror_t uinject_coap_receive(OpenQueueEntry_t* msg) {
 //       openqueue_freePacketBuffer(reply);
 //    }
 // */
-//    rcv_cmd = pkt->cmdType;
+   // rcv_cmd = pkt->cmdType;
 
-//    switch(rcv_cmd){
+   // switch(rcv_cmd){
 //       case UINJECT_GET_INFO:
 //       	break;
 //       case UINJECT_SET_PARENTS:
@@ -197,21 +186,21 @@ owerror_t uinject_coap_receive(OpenQueueEntry_t* msg) {
 //         uinject_vars.usaki_period_time_code = pkt->serialNumL;
 //         leds_debug_toggle();
 //       	break;
-//       case UALERT_SET_ON:
-//         //alarm_on();
-// 		PC2_alarm_on = 1;	
-//       	break;
-//       case UALERT_SET_OFF:
-//         //alarm_off();
-// 		PC2_alarm_on = 0;	
-//      	break;
-//       default:
-//         leds_debug_toggle();
-//    }
+  //     case UALERT_SET_ON:
+  //       //alarm_on();
+		// PC2_alarm_on = 1;	
+  //     	break;
+  //     case UALERT_SET_OFF:
+  //       //alarm_off();
+		// PC2_alarm_on = 0;	
+  //    	break;
+  //     default:
+  //       //leds_debug_toggle();
+  //  }
 
 //    //openserial_printData(rcv_dataa, 3);
 
-//    openqueue_freePacketBuffer(request);
+    // openqueue_freePacketBuffer(msg);
 
 
 //    // openqueue_freePacketBuffer(pkt);
@@ -290,6 +279,7 @@ void uinject_coap_task_cb() {
  //   // CoAP payload
  //   packetfunctions_reserveHeaderSize(pkt,uinjectPayloadLen);
 
+         // openqueue_freePacketBuffer(pkt);
 	// // check re-transmit mechanism
  //   if(uinject_coap_vars.needAck){
  //      if (isAck()){
@@ -367,18 +357,26 @@ void uinject_coap_task_cb() {
 
  //   memcpy(&pkt->payload[6],parentShortAddr,2);
 
+
  //   memcpy(&(pkt->payload[8]),&rank,sizeof(rank));
+
 
  //   *((uint8_t*)&pkt->payload[10]) = numNeighbor;
 
+
  //   neighbors_getNshortAddrnRSSI(&(pkt->payload[11]));
 
+
  //   //payload info end
+
+
 
  //   packetfunctions_reserveHeaderSize(pkt,1);
  //   pkt->payload[0] = COAP_PAYLOAD_MARKER;
    
 
+
+   // location-path option
  //   // content-type option
  //   packetfunctions_reserveHeaderSize(pkt,2);
  //   pkt->payload[0]                = (COAP_OPTION_NUM_CONTENTFORMAT - COAP_OPTION_NUM_URIPATH) << 4
@@ -397,8 +395,8 @@ void uinject_coap_task_cb() {
  //   pkt->l3_destinationAdd.type    = ADDR_128B;
  //   memcpy(&pkt->l3_destinationAdd.addr_128b[0],&ipAddr_ringmaster,16);
    
- //   pkt->l2_frameType = IEEE154_TYPE_SENSED_DATA;
 
+ //   pkt->l2_frameType = IEEE154_TYPE_SENSED_DATA;
  //   // send
  //   outcome = opencoap_send(
  //      pkt,
@@ -408,6 +406,7 @@ void uinject_coap_task_cb() {
  //      &uinject_coap_vars.desc
  //   );
    
+
  //   // avoid overflowing the queue if fails
  //   if (outcome==E_FAIL) {
  //      openqueue_freePacketBuffer(pkt);
@@ -538,5 +537,4 @@ void uinject_coap_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
 
 //   opentimers_setPeriod(id, TIME_MS, new_duration);
 
-//   return 1;
-// }
+//   return 1;// }
