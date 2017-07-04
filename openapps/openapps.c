@@ -22,6 +22,7 @@
 #include "uecho.h"
 #include "uinject.h"
 #include "uinject_coap.h"
+#include "usaki.h"
 
 //=========================== variables =======================================
 
@@ -42,12 +43,13 @@ void openapps_init(void) {
    cwellknown_init();
    rrt_init();
 
-   uinject_coap_init();
+   // uinject_coap_init();
    creportasn_init();
    // TCP
    techo_init();
    // UDP
 //   uecho_init();
+   usaki_init();
 
    //cscheduled_init();
 }

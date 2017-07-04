@@ -22,7 +22,7 @@ while True:
     hisPort        = dist_addr[1]
 
 #    counter        = struct.unpack('<h',data)[0]
-    counter,data1,data2,data3,data4         = struct.unpack('HHHHH',data)
+    counter,data1,data2,data3,data4,data5 = struct.unpack('HHHHHH',data)
     
     print 'len=%d, counter=%x, d1=%x, d2=%x, d3=%d, d4=%x' % (len(data),counter,data1,data2,data3,data4)
     #d1, inner temp

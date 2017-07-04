@@ -7,6 +7,7 @@
 #include "packetfunctions.h"
 #include "scheduler.h"
 #include "IEEE802154E.h"
+#include "IEEE802154.h"
 #include "idmanager.h"
 #include "adc_sensor.h"
 
@@ -14,9 +15,8 @@
 #include "my_spi.h"
 #include <headers/hw_memmap.h>
 //=========================== variables =======================================
-
+#define USAKI_PERIOD  20000
 usaki_vars_t usaki_vars;
-extern uinject_vars_t uinject_vars;
 uint16_t usaki_pulse_cnt=0;
 
 static const uint8_t usaki_dst_addr[]   = {
@@ -31,17 +31,17 @@ void usaki_task_cb(void);
 
 //=========================== public ==========================================
 
-void usaki_init() {
+void usaki_init(){
    
    // clear local variables
    memset(&usaki_vars,0,sizeof(usaki_vars_t));
 
-   uinject_vars.usaki_period_time = UPLOAD_PERIOD_TIME_5MS;
-   uinject_vars.usaki_period_time_code = USAKI_SET_ULTIME_5_ABS;
+   usaki_vars.usaki_period_time = USAKI_PERIOD;
+   usaki_vars.usaki_period_time_code = USAKI_SET_ULTIME_5_ABS;
    
    // start periodic timer
-   usaki_vars.timerId                    = opentimers_start(
-      uinject_vars.usaki_period_time,
+      usaki_vars.timerId                    = opentimers_start(
+      usaki_vars.usaki_period_time,
       TIMER_PERIODIC,TIME_MS,
       usaki_timer_cb
    );
@@ -56,7 +56,7 @@ void usaki_receive(OpenQueueEntry_t* pkt) {
    openqueue_freePacketBuffer(pkt);
    
    openserial_printError(
-      COMPONENT_UINJECT,
+      COMPONENT_USAKI,
       ERR_RCVD_ECHO_REPLY,
       (errorparameter_t)0,
       (errorparameter_t)0
@@ -105,7 +105,7 @@ void usaki_task_cb() {
    pkt = openqueue_getFreePacketBuffer(COMPONENT_USAKI);
    if (pkt==NULL) {
       openserial_printError(
-         COMPONENT_UINJECT,
+         COMPONENT_USAKI,
          ERR_NO_FREE_PACKET_BUFFER,
          (errorparameter_t)0,
          (errorparameter_t)0
@@ -119,6 +119,7 @@ void usaki_task_cb() {
    pkt->l4_destination_port           = WKP_UDP_SAKI;
    pkt->l4_sourcePortORicmpv6Type     = WKP_UDP_SAKI;
    pkt->l3_destinationAdd.type        = ADDR_128B;
+   pkt->l2_frameType                  = IEEE154_TYPE_SENSED_DATA;
    memcpy(&pkt->l3_destinationAdd.addr_128b[0],usaki_dst_addr,16);
    
    packetfunctions_reserveHeaderSize(pkt,sizeof(uint16_t)*6);

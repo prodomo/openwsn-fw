@@ -172,6 +172,7 @@ enum {
    COMPONENT_CGREEN                    = 0x28,
    COMPONENT_CREPORTASN                = 0x29,
    COMPONENT_UINJECT_COAP              = 0x30,
+   COMPONENT_USAKI                     = 0x2a,
 };
 
 /**

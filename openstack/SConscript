@@ -125,6 +125,7 @@ else:
             os.path.join('#','openapps','cgreen'),
             os.path.join('#','openapps','creportasn'),
             os.path.join('#','openapps','uinject_coap'),
+            os.path.join('#','openapps','usaki'),
         ],
     )
     
