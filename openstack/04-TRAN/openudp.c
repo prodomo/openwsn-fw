@@ -10,7 +10,7 @@
 #include "uinject.h"
 #include "userialbridge.h"
 #include "rrt.h"
-// #include "uinject_coap.h"
+#include "uinject_new.h"
 
 //=========================== variables =======================================
 
@@ -213,6 +213,9 @@ void openudp_receive(OpenQueueEntry_t* msg) {
          break;
       case WKP_UDP_INJECT:
          uinject_receive(msg);
+         break;
+      case WKP_UDP_INJECT_NEW:
+         uinject_new_receive(msg);
          break;
       // case WKP_UDP_INJECT_COAP:
       //    uinject_coap_receive(msg);
