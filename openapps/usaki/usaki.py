@@ -68,8 +68,9 @@ while True:
     systemTime = datetime.datetime.now()
 
 #    counter        = struct.unpack('<h',data)[0]
-    counter,int_temp,ext_temp,ext_pyra,int_volt,gpio_pulse = struct.unpack('HHHHHH',data)
-    
+    print len(data)
+    checksum1, checksum2, asn1, asn2, asn3, asn4, asn5,counter,int_temp,ext_temp,ext_pyra,int_volt,gpio_pulse = struct.unpack('=7B HHHHHH',data)
+    # counter,int_temp,ext_temp,ext_pyra,int_volt,gpio_pulse = struct.unpack('HHHHHH',data)
     #d1, inner temp
     #d2, exter temp
     #d3, pyra

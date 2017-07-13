@@ -10,7 +10,7 @@
 #include "uinject.h"
 #include "userialbridge.h"
 #include "rrt.h"
-#include "uinject_coap.h"
+// #include "uinject_coap.h"
 
 //=========================== variables =======================================
 
@@ -141,9 +141,9 @@ void openudp_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
 	 //udpprint_sendDone(msg, error);
          rrt_sendDone(msg, error);
          break;
-    //add test port for inject_coap
-      case WKP_UDP_INJECT_COAP:
-         uinject_coap_sendDone(msg, error);
+    // //add test port for inject_coap
+    //   case WKP_UDP_INJECT_COAP:
+    //      uinject_coap_sendDone(msg, error);
          break;
       default:
          openserial_printError(COMPONENT_OPENUDP,ERR_UNSUPPORTED_PORT_NUMBER,
@@ -214,9 +214,9 @@ void openudp_receive(OpenQueueEntry_t* msg) {
       case WKP_UDP_INJECT:
          uinject_receive(msg);
          break;
-      case WKP_UDP_INJECT_COAP:
-         uinject_coap_receive(msg);
-         break;
+      // case WKP_UDP_INJECT_COAP:
+      //    uinject_coap_receive(msg);
+      //    break;
       default:
          openserial_printError(COMPONENT_OPENUDP,ERR_UNSUPPORTED_PORT_NUMBER,
                                (errorparameter_t)msg->l4_destination_port,

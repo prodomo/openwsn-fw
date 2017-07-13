@@ -25,7 +25,7 @@
 //=========================== defines =========================================
 
 /// inter-packet period (in ms)
-#define CREPORTASNPERIOD 20000 
+#define CREPORTASNPERIOD  20000
 #define PAYLOADLEN      32
 
 const uint8_t creportasn_path0[] = "reportasn";
@@ -58,7 +58,7 @@ void creportasn_init() {
    creportasn_vars.desc.discoverable         = TRUE;
    creportasn_vars.desc.callbackRx           = &creportasn_receive;
    creportasn_vars.desc.callbackSendDone     = &creportasn_sendDone;
-   
+      
    creportasn_vars.creportasn_sequence = 0;
    creportasn_vars.lastSuccessLeft = 0;
    creportasn_vars.errorCounter = 0;
@@ -136,7 +136,7 @@ void creportasn_task_cb() {
    uint8_t numDeSync;
    ieee154e_getNumDesync(&numDeSync);
 
-   pkt->payload[12] = numDeSync;
+   pkt->payload[12] = numDeSync; 
 
    uint16_t myRank = icmpv6rpl_getMyDAGrank();
 

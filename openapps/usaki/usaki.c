@@ -15,7 +15,8 @@
 #include "my_spi.h"
 #include <headers/hw_memmap.h>
 //=========================== variables =======================================
-#define USAKI_PERIOD  20000
+#define USAKI_PERIOD  10000
+// #define PAYLOADLEN 19
 usaki_vars_t usaki_vars;
 uint16_t usaki_pulse_cnt=0;
 
@@ -101,6 +102,7 @@ void usaki_task_cb() {
    // get pulse count on gpio
    usaki_vars.gpio_pulse = usaki_pulse_cnt;
    
+   
    // get a free packet buffer
    pkt = openqueue_getFreePacketBuffer(COMPONENT_USAKI);
    if (pkt==NULL) {
@@ -122,6 +124,15 @@ void usaki_task_cb() {
    pkt->l2_frameType                  = IEEE154_TYPE_SENSED_DATA;
    memcpy(&pkt->l3_destinationAdd.addr_128b[0],usaki_dst_addr,16);
    
+   // packetfunctions_reserveHeaderSize(pkt,PAYLOADLEN);
+   // // speacial flag
+   // pkt->payload[0] = 0x54;
+   // pkt->payload[1] = 0x66;
+
+   // // append asn
+   // uint8_t* pointer = &pkt->payload[2];
+   // ieee154e_getAsn(pointer);
+
    packetfunctions_reserveHeaderSize(pkt,sizeof(uint16_t)*6);
    *((uint16_t*)&pkt->payload[0]) = usaki_vars.counter++;
    *((uint16_t*)&pkt->payload[2]) = usaki_vars.int_temp;

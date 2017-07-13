@@ -15,13 +15,13 @@
 #include "cwellknown.h"
 #include "rrt.h"
 #include "cgreen.h"
-#include "creportasn.h"
+// #include "creportasn.h"
 // TCP
 #include "techo.h"
 // UDP
 #include "uecho.h"
 #include "uinject.h"
-#include "uinject_coap.h"
+#include "uinject_new.h"
 #include "usaki.h"
 
 //=========================== variables =======================================
@@ -43,13 +43,13 @@ void openapps_init(void) {
    cwellknown_init();
    rrt_init();
 
-   // uinject_coap_init();
+   uinject_new_init();
    creportasn_init();
    // TCP
    techo_init();
    // UDP
 //   uecho_init();
-   usaki_init();
+   // usaki_init();
 
    //cscheduled_init();
 }

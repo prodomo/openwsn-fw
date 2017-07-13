@@ -92,8 +92,10 @@ enum {
    WKP_UDP_INJECT                      =   61617,// 0xf0b1
    WKP_UDP_RINGMASTER                  =   15000,
    WKP_UDP_SERIALBRIDGE                =    2001,
-   WKP_UDP_INJECT_COAP                 =    2000,
+   WKP_UDP_INJECT_COAP                 =    2500,
    WKP_UDP_SAKI                        =    2424,
+   WKP_UDP_INJECT_NEW                  =    2000,
+
 };
 
 //status elements
@@ -173,6 +175,8 @@ enum {
    COMPONENT_CREPORTASN                = 0x29,
    COMPONENT_UINJECT_COAP              = 0x30,
    COMPONENT_USAKI                     = 0x2a,
+   COMPONENT_UINJECT_NEW               = 0x2b,
+
 };
 
 /**
