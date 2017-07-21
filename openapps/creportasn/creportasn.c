@@ -26,7 +26,7 @@
 
 /// inter-packet period (in ms)
 #define CREPORTASNPERIOD  20000
-#define PAYLOADLEN      32
+#define PAYLOADLEN      25
 
 const uint8_t creportasn_path0[] = "reportasn";
 uint16_t creportasn_pulse_cnt=0; 
@@ -93,6 +93,8 @@ void creportasn_timer_cb(opentimer_id_t id){
 void creportasn_task_cb() {
    OpenQueueEntry_t*    pkt;
    owerror_t            outcome;
+   open_addr_t          tmp_addr;
+   uint8_t           parentShortAddr[2];
    
    // don't run if not synch
    if (ieee154e_isSynch() == FALSE) return;
@@ -129,38 +131,53 @@ void creportasn_task_cb() {
    pkt->payload[0] = 0x54;
    pkt->payload[1] = 0x66;
 
-   // append asn
-   uint8_t* pointer = &pkt->payload[2];
-   ieee154e_getAsn(pointer);
+   // // append asn
+   // uint8_t* pointer = &pkt->payload[2];
+   // ieee154e_getAsn(pointer);
 
-   uint8_t numDeSync;
-   ieee154e_getNumDesync(&numDeSync);
+   // uint8_t numDeSync;
+   // ieee154e_getNumDesync(&numDeSync);
 
-   pkt->payload[12] = numDeSync; 
+   // pkt->payload[12] = numDeSync; 
 
    uint16_t myRank = icmpv6rpl_getMyDAGrank();
 
-   memcpy(&pkt->payload[13], &myRank, sizeof(myRank));
+   memcpy(&pkt->payload[2], &myRank, sizeof(myRank));
 
    uint8_t parentIndex;
 
+   icmpv6rpl_getPreferredParentEui64(&tmp_addr);
+
+   // assign parent short addr
+   memset(parentShortAddr,0,2);
+   if(tmp_addr.type == ADDR_64B)
+      memcpy(parentShortAddr, &tmp_addr.addr_64b[6], 2);
+   memcpy(&pkt->payload[4],parentShortAddr,2);
 
    icmpv6rpl_getPreferredParentIndex(&parentIndex);
+
+   uint16_t parent_rank = neighbors_getNeighborRank(parentIndex);
+   memcpy(&pkt->payload[6], &parent_rank, sizeof(parent_rank));
 
    neighborRow_t parentRow;
    uint8_t parentTx;
    uint8_t parentTxACK;
    neighbors_getParentTxTxACK(&parentTx, &parentTxACK, parentIndex);
    
-   pkt->payload[15] = parentTx;
-   pkt->payload[16] = parentTxACK;
+   pkt->payload[8] = parentTx;
+   pkt->payload[9] = parentTxACK;
 
-   pkt->payload[17] = creportasn_vars.lastSuccessLeft;
-   pkt->payload[18] = creportasn_vars.errorCounter;
+   int8_t parentRssi;
+   neighbors_getParentRSSI(&parentRssi, parentIndex);
+   pkt->payload[10] = 0-parentRssi;
 
-   creportasn_vars.creportasn_sequence++;
 
-   pkt->payload[19] = creportasn_vars.creportasn_sequence;
+   pkt->payload[11] = creportasn_vars.lastSuccessLeft;
+   pkt->payload[12] = creportasn_vars.errorCounter;
+
+   // creportasn_vars.creportasn_sequence++;
+
+   // pkt->payload[19] = creportasn_vars.creportasn_sequence;
    
    //nancy add
    // creportasn_vars.int_temp = 256;
@@ -170,20 +187,20 @@ void creportasn_task_cb() {
    // creportasn_vars.gpio_pulse =230;
    // show inner temp
    creportasn_vars.int_temp = adc_sens_read_temperature();
-   // show external temp
+   // // show external temp
    creportasn_vars.ext_temp = adc_sens_read_temperature_PA1();
    creportasn_vars.ext_pyra = adc_sens_read_temperature_PA0();
-   // show voltage
+   // // show voltage
    creportasn_vars.int_volt = adc_sens_read_VDD_voltage();
-   // get pulse count on gpio
+   // // get pulse count on gpio
    creportasn_vars.gpio_pulse = creportasn_pulse_cnt;
 
-   *((uint16_t*)&pkt->payload[20]) = creportasn_vars.counter++;
-   *((uint16_t*)&pkt->payload[22]) = creportasn_vars.int_temp;
-   *((uint16_t*)&pkt->payload[24]) = creportasn_vars.ext_temp;
-   *((uint16_t*)&pkt->payload[26]) = creportasn_vars.ext_pyra;
-   *((uint16_t*)&pkt->payload[28]) = creportasn_vars.int_volt;
-   *((uint16_t*)&pkt->payload[30]) = creportasn_vars.gpio_pulse;
+   *((uint16_t*)&pkt->payload[13]) = creportasn_vars.counter++;
+   *((uint16_t*)&pkt->payload[15]) = creportasn_vars.int_temp;
+   *((uint16_t*)&pkt->payload[17]) = creportasn_vars.ext_temp;
+   *((uint16_t*)&pkt->payload[19]) = creportasn_vars.ext_pyra;
+   *((uint16_t*)&pkt->payload[21]) = creportasn_vars.int_volt;
+   *((uint16_t*)&pkt->payload[23]) = creportasn_vars.gpio_pulse;
 
 
    //nancy end

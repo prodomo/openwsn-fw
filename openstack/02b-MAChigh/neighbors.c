@@ -465,7 +465,7 @@ void  neighbors_removeOld() {
     for (i=0;i<MAXNUMNEIGHBORS;i++) {
         if (neighbors_vars.neighbors[i].used==1) {
             timeSinceHeard = ieee154e_asnDiff(&neighbors_vars.neighbors[i].asn);
-            if (timeSinceHeard>DESYNCTIMEOUT) {
+            if (timeSinceHeard>40000) {
                 haveParent = icmpv6rpl_getPreferredParentIndex(&j);
                 if (haveParent && (i==j)) { // this is our preferred parent, carefully!
                     icmpv6rpl_killPreferredParent();
@@ -779,4 +779,8 @@ void neighbors_getNshortAddrnRSSI(uint8_t* ptr){
                         break;
                 }
         }
+}
+void neighbors_getParentRSSI(int8_t* parentRssi, uint8_t index)
+{
+  *(parentRssi) = neighbors_vars.neighbors[index].rssi;
 }

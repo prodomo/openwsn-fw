@@ -99,6 +99,7 @@ void          neighbors_getParentTxTxACK(uint8_t* numTx, uint8_t* numTxACK, uint
 // force migrate from old version, Bruce
 void neighbors_getNshortAddrnRSSI(uint8_t* ptr);
 bool my_neighbors_getTxTxAck(open_addr_t* macToCompare, uint8_t* numTx, uint8_t* numTxAck);
+void neighbors_getParentRSSI(int8_t* parentRssi, uint8_t index);
 /**
 \}
 \}

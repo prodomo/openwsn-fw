@@ -214,9 +214,9 @@ void openudp_receive(OpenQueueEntry_t* msg) {
       case WKP_UDP_INJECT:
          uinject_receive(msg);
          break;
-      case WKP_UDP_INJECT_NEW:
-         uinject_new_receive(msg);
-         break;
+      // case WKP_UDP_INJECT_NEW:
+      //    uinject_new_receive(msg);
+      //    break;
       // case WKP_UDP_INJECT_COAP:
       //    uinject_coap_receive(msg);
       //    break;

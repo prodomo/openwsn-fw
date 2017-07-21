@@ -1080,6 +1080,7 @@ port_INLINE void activity_ti1ORri1() {
    }
 }
 
+//TXDATAOFFSET
 port_INLINE void activity_ti2() {
    
     // change state
@@ -1126,6 +1127,7 @@ port_INLINE void activity_ti2() {
 #endif
 }
 
+//S_TXDATAPREPARE
 port_INLINE void activity_tie1() {
    // log the error
    openserial_printError(COMPONENT_IEEE802154E,ERR_MAXTXDATAPREPARE_OVERFLOW,
@@ -1136,6 +1138,7 @@ port_INLINE void activity_tie1() {
    endSlot();
 }
 
+//S_TXDATAREADY
 port_INLINE void activity_ti3() {
     // change state
     changeState(S_TXDATADELAY);
@@ -1149,6 +1152,7 @@ port_INLINE void activity_ti3() {
 #endif
 }
 
+//S_TXDATADELAY
 port_INLINE void activity_tie2() {
     // log the error
    openserial_printError(COMPONENT_IEEE802154E,ERR_WDRADIO_OVERFLOWS,
@@ -1181,6 +1185,7 @@ port_INLINE void activity_ti4(PORT_RADIOTIMER_WIDTH capturedTime) {
 #endif
 }
 
+//S_TXDATA
 port_INLINE void activity_tie3() {
     // log the error
     openserial_printError(COMPONENT_IEEE802154E,ERR_WDDATADURATION_OVERFLOWS,
@@ -1191,6 +1196,7 @@ port_INLINE void activity_tie3() {
     endSlot();
 }
 
+//end S_TXDATA
 port_INLINE void activity_ti5(PORT_RADIOTIMER_WIDTH capturedTime) {
     bool listenForAck;
     
@@ -1245,6 +1251,7 @@ port_INLINE void activity_ti5(PORT_RADIOTIMER_WIDTH capturedTime) {
     }
 }
 
+//S_RXACKOFFSET
 port_INLINE void activity_ti6() {
     // change state
     changeState(S_RXACKPREPARE);
@@ -1272,6 +1279,7 @@ port_INLINE void activity_ti6() {
     changeState(S_RXACKREADY);
 }
 
+//S_RXACKPREPARE
 port_INLINE void activity_tie4() {
    // log the error
    openserial_printError(COMPONENT_IEEE802154E,ERR_MAXRXACKPREPARE_OVERFLOWS,
@@ -1282,6 +1290,7 @@ port_INLINE void activity_tie4() {
    endSlot();
 }
 
+//S_RXACKREADY
 port_INLINE void activity_ti7() {
    // change state
    changeState(S_RXACKLISTEN);
@@ -1297,6 +1306,7 @@ port_INLINE void activity_ti7() {
 #endif
 }
 
+//S_RXACKLISTEN
 port_INLINE void activity_tie5() {
     // indicate transmit failed to schedule to keep stats
     schedule_indicateTx(&ieee154e_vars.asn,FALSE);
@@ -1319,6 +1329,7 @@ port_INLINE void activity_tie5() {
     endSlot();
 }
 
+//start S_RXACKLISTEN
 port_INLINE void activity_ti8(PORT_RADIOTIMER_WIDTH capturedTime) {
     // change state
     changeState(S_RXACK);
@@ -1340,6 +1351,7 @@ port_INLINE void activity_ti8(PORT_RADIOTIMER_WIDTH capturedTime) {
 #endif
 }
 
+//S_RXACK
 port_INLINE void activity_tie6() {
     // log the error
     openserial_printError(COMPONENT_IEEE802154E,ERR_WDACKDURATION_OVERFLOWS,
@@ -1349,6 +1361,7 @@ port_INLINE void activity_tie6() {
     endSlot();
 }
 
+//end S_RXACK
 port_INLINE void activity_ti9(PORT_RADIOTIMER_WIDTH capturedTime) {
     ieee802154_header_iht     ieee802514_header;
     
@@ -1482,7 +1495,7 @@ port_INLINE void activity_ti9(PORT_RADIOTIMER_WIDTH capturedTime) {
 }
 
 //======= RX
-
+//S_RXDATAOFFSET
 port_INLINE void activity_ri2() {
     // change state
     changeState(S_RXDATAPREPARE);
@@ -1507,6 +1520,7 @@ port_INLINE void activity_ri2() {
     changeState(S_RXDATAREADY);
 }
 
+//S_RXDATAPREPARE
 port_INLINE void activity_rie1() {
    // log the error
    openserial_printError(COMPONENT_IEEE802154E,ERR_MAXRXDATAPREPARE_OVERFLOWS,
@@ -1517,6 +1531,7 @@ port_INLINE void activity_rie1() {
    endSlot();
 }
 
+//S_RXDATAREADY
 port_INLINE void activity_ri3() {
     // change state
     changeState(S_RXDATALISTEN);
@@ -1532,11 +1547,13 @@ port_INLINE void activity_ri3() {
 #endif
 }
 
+//S_RXDATALISTEN
 port_INLINE void activity_rie2() {
    // abort
    endSlot();
 }
 
+//start S_RXDATALISTEN
 port_INLINE void activity_ri4(PORT_RADIOTIMER_WIDTH capturedTime) {
 
    // change state
@@ -1560,6 +1577,7 @@ port_INLINE void activity_ri4(PORT_RADIOTIMER_WIDTH capturedTime) {
 #endif
 }
 
+//S_RXDATA
 port_INLINE void activity_rie3() {
      
    // log the error
@@ -1571,6 +1589,7 @@ port_INLINE void activity_rie3() {
    endSlot();
 }
 
+//end S_RXDATA
 port_INLINE void activity_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
    ieee802154_header_iht ieee802514_header;
    uint16_t lenIE=0;
@@ -1799,6 +1818,7 @@ port_INLINE void activity_ri5(PORT_RADIOTIMER_WIDTH capturedTime) {
    endSlot();
 }
 
+//S_TXACKOFFSET
 port_INLINE void activity_ri6() {
    
     // change state
@@ -1880,6 +1900,7 @@ port_INLINE void activity_ri6() {
 #endif
 }
 
+// S_TXACKPREPARE
 port_INLINE void activity_rie4() {
     // log the error
     openserial_printError(COMPONENT_IEEE802154E,ERR_MAXTXACKPREPARE_OVERFLOWS,
@@ -1890,6 +1911,7 @@ port_INLINE void activity_rie4() {
     endSlot();
 }
 
+//S_TXACKREADY
 port_INLINE void activity_ri7() {
     // change state
     changeState(S_TXACKDELAY);
@@ -1903,6 +1925,7 @@ port_INLINE void activity_ri7() {
 #endif
 }
 
+//S_TXACKDELAY
 port_INLINE void activity_rie5() {
    // log the error
    openserial_printError(COMPONENT_IEEE802154E,ERR_WDRADIOTX_OVERFLOWS,
@@ -1913,6 +1936,7 @@ port_INLINE void activity_rie5() {
    endSlot();
 }
 
+//start S_TXACKDELAY
 port_INLINE void activity_ri8(PORT_RADIOTIMER_WIDTH capturedTime) {
     // change state
     changeState(S_TXACK);
@@ -1934,6 +1958,7 @@ port_INLINE void activity_ri8(PORT_RADIOTIMER_WIDTH capturedTime) {
 #endif
 }
 
+//S_TXACK
 port_INLINE void activity_rie6() {
    // log the error
    openserial_printError(COMPONENT_IEEE802154E,ERR_WDACKDURATION_OVERFLOWS,
@@ -1944,6 +1969,7 @@ port_INLINE void activity_rie6() {
    endSlot();
 }
 
+//end S_TXACK
 port_INLINE void activity_ri9(PORT_RADIOTIMER_WIDTH capturedTime) {
    // change state
    changeState(S_RXPROC);
