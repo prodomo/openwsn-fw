@@ -12,6 +12,7 @@
 //=========================== variables =======================================
 
 openqueue_vars_t openqueue_vars;
+static int8_t queue_idx;
 
 //=========================== prototypes ======================================
 void openqueue_reset_entry(OpenQueueEntry_t* entry);
@@ -64,7 +65,7 @@ get a new packet buffer to start creating a new packet.
          it could not be allocated (buffer full or not synchronized).
 */
 OpenQueueEntry_t* openqueue_getFreePacketBuffer(uint8_t creator) {
-   uint8_t i;
+   uint8_t i,j;
    INTERRUPT_DECLARATION();
    DISABLE_INTERRUPTS();
    
@@ -84,11 +85,13 @@ OpenQueueEntry_t* openqueue_getFreePacketBuffer(uint8_t creator) {
    
    // walk through queue and find free entry
    for (i=0;i<QUEUELENGTH;i++) {
-      if (openqueue_vars.queue[i].owner==COMPONENT_NULL) {
-         openqueue_vars.queue[i].creator=creator;
-         openqueue_vars.queue[i].owner=COMPONENT_OPENQUEUE;
+      j = (i + queue_idx) % QUEUELENGTH;
+      if (openqueue_vars.queue[j].owner==COMPONENT_NULL) {
+         openqueue_vars.queue[j].creator=creator;
+         openqueue_vars.queue[j].owner=COMPONENT_OPENQUEUE;
+         queue_idx = j;
          ENABLE_INTERRUPTS(); 
-         return &openqueue_vars.queue[i];
+         return &openqueue_vars.queue[j];
       }
    }
    ENABLE_INTERRUPTS();
