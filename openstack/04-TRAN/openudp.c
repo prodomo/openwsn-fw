@@ -141,10 +141,13 @@ void openudp_sendDone(OpenQueueEntry_t* msg, owerror_t error) {
 	 //udpprint_sendDone(msg, error);
          rrt_sendDone(msg, error);
          break;
+      case WKP_UDP_INJECT_NEW:
+         uinject_new_sendDone(msg,error);
+         break;   
     // //add test port for inject_coap
     //   case WKP_UDP_INJECT_COAP:
     //      uinject_coap_sendDone(msg, error);
-         break;
+         // break;
       default:
          openserial_printError(COMPONENT_OPENUDP,ERR_UNSUPPORTED_PORT_NUMBER,
                                (errorparameter_t)msg->l4_sourcePortORicmpv6Type,
@@ -214,9 +217,9 @@ void openudp_receive(OpenQueueEntry_t* msg) {
       case WKP_UDP_INJECT:
          uinject_receive(msg);
          break;
-      // case WKP_UDP_INJECT_NEW:
-      //    uinject_new_receive(msg);
-      //    break;
+      case WKP_UDP_INJECT_NEW:
+         uinject_new_receive(msg);
+         break;
       // case WKP_UDP_INJECT_COAP:
       //    uinject_coap_receive(msg);
       //    break;

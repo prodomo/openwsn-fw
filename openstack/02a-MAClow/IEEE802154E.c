@@ -115,7 +115,7 @@ void ieee154e_init() {
    memset(&ieee154e_vars,0,sizeof(ieee154e_vars_t));
    memset(&ieee154e_dbg,0,sizeof(ieee154e_dbg_t));
    
-   ieee154e_vars.singleChannel     = 0; // 0 means channel hopping
+   ieee154e_vars.singleChannel     = SYNCHRONIZING_CHANNEL; // 0 means channel hopping
    ieee154e_vars.isAckEnabled      = TRUE;
    ieee154e_vars.isSecurityEnabled = FALSE;
    ieee154e_vars.slotDuration      = TsSlotDuration;
@@ -935,9 +935,9 @@ port_INLINE void activity_ti1ORri1() {
             schedule_getNeighbor(&neighbor);
             ieee154e_vars.dataToSend = openqueue_macGetDataPacket(&neighbor);
           
-            if(ieee154e_vars.dataToSend != NULL && (ieee154e_vars.dataToSend->creator == COMPONENT_CREPORTASN || ieee154e_vars.dataToSend->l2_frameType == IEEE154_TYPE_SENSED_DATA) && cellType == CELLTYPE_TXRX){
-               ieee154e_vars.dataToSend = NULL;   
-            }
+            // if(ieee154e_vars.dataToSend != NULL && (ieee154e_vars.dataToSend->creator == COMPONENT_CREPORTASN || ieee154e_vars.dataToSend->l2_frameType == IEEE154_TYPE_SENSED_DATA) && cellType == CELLTYPE_TXRX){
+            //    ieee154e_vars.dataToSend = NULL;   
+            // }
 
             if ((ieee154e_vars.dataToSend==NULL) && (cellType==CELLTYPE_TXRX)) {
                couldSendEB=TRUE;

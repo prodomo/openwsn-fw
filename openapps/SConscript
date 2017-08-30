@@ -17,15 +17,16 @@ defaultApps   = [
     'uinject',
     'userialbridge',
     'rrt',
-    'cgreen',
-    'creportasn',
-    'uinject_coap'
+    # 'cgreen',
+    # 'creportasn',
+    'uinject_new',
+    'usaki'
 ]
 if localEnv['board']=='python':
     defaultApps  += [
         'cexample',
-        'cstorm',
-        'cgreen'
+        'cstorm'
+        # 'cgreen'
     ]
 
 # apps which should always be present
@@ -37,9 +38,10 @@ defaultAppsInit   = [
     'techo',
     'uecho',
     'rrt',
-    'cgreen',
-    'creportasn',
-    'uinject_coap'
+    # 'cgreen',
+    # 'creportasn',
+    'uinject_new',
+    'usaki'
 ]
 
 # additional apps the user wants to build
