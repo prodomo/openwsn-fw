@@ -44,7 +44,7 @@ typedef struct {
 } radio_vars_t;
 
 radio_vars_t radio_vars;
-
+// bool desync_enable;
 //=========================== prototypes ======================================
 
 void     enable_radio_interrupts(void);
@@ -65,6 +65,7 @@ void radio_init() {
    // clear variables
    memset(&radio_vars,0,sizeof(radio_vars_t));
    
+   // desync_enable = false;
    // change state
    radio_vars.state          = RADIOSTATE_STOPPED;
    //flush fifos
@@ -156,6 +157,12 @@ void radio_init() {
    // change state
    radio_vars.state               = RADIOSTATE_RFOFF;
 }
+
+// void radio_desync(void){
+//    desync_enable=true;
+//    //leds_all_off();
+//    radio_rfOff();
+// }
 
 void radio_setOverflowCb(radiotimer_compare_cbt cb) {
    radiotimer_setOverflowCb(cb);
@@ -335,6 +342,20 @@ void radio_rxEnable() {
 }
 
 void radio_rxNow() {
+   // if(!desync_enable)
+   // {
+   //    //empty buffer before receiving
+   //    //CC2538_RF_CSP_ISFLUSHRX();
+      
+   //    //enable radio interrupts
+   //    CC2538_RF_CSP_ISFLUSHRX();
+   //    enable_radio_interrupts();
+      
+   //    CC2538_RF_CSP_ISRXON();
+   //    // busy wait until radio really listening
+   //    while(!((HWREG(RFCORE_XREG_FSMSTAT1) & RFCORE_XREG_FSMSTAT1_RX_ACTIVE)));
+
+   // }
    //empty buffer before receiving
    //CC2538_RF_CSP_ISFLUSHRX();
    
@@ -419,6 +440,12 @@ void disable_radio_interrupts(void){
 }
 
 void radio_on(void){
+   // if(desync_enable){
+   // }
+   // else{
+   //    // CC2538_RF_CSP_ISFLUSHRX();
+   //     CC2538_RF_CSP_ISRXON();
+   // }
    // CC2538_RF_CSP_ISFLUSHRX();
     CC2538_RF_CSP_ISRXON();
 }

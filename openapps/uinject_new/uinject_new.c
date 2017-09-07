@@ -18,6 +18,7 @@
 #include "neighbors.h"
 #include "icmpv6rpl.h"
 #include "my_common.h"
+#include "radio.h"
 
 
 extern usaki_vars_t usaki_vars;
@@ -25,6 +26,8 @@ uinject_new_vars_t uinject_new_vars;
 uint8_t PC2_status = 0;
 uint8_t PC2_alarm_on;
 opentimer_id_t buzz_timer;
+bool sync_root_flag = TRUE; 
+uint8_t leave_root_cnt = 0;
 
 static const uint8_t uinject_new_dst_addr[]   = {
    0xbb, 0xbb, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -39,7 +42,19 @@ void uinject_new_timer_cb(opentimer_id_t id);
 void uinject_new_task_cb(void);
 void usaki_buzz_timer_cb(opentimer_id_t id);
 void usaki_buzz_task_cb(void);
+// void uneig_reset_task(void);
 // //=========================== public ==========================================
+// bool uinj_isSync(void){
+//   return sync_root_flag;
+// }
+
+// void uinj_unSet(void){
+//   sync_root_flag = FALSE;
+// }
+// void uinj_set(void){
+//   sync_root_flag = TRUE;
+// }
+
 bool isAck(){
   
   if (uinject_new_vars.rtnCounter == uinject_new_vars.counter)
@@ -90,12 +105,12 @@ void uinject_new_init(){
       usaki_buzz_timer_cb
    );
 
-   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
-   GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+   // GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+   // GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
+   // GPIOPinWrite(GPIO_C_BASE, GPIO_PIN_2, GPIO_PIN_2);
 
    alarm_off();
-
+   leave_root_cnt = 0;
 }
 
 
@@ -106,7 +121,14 @@ void usaki_buzz_timer_cb(opentimer_id_t id){
 
    scheduler_push_task(usaki_buzz_task_cb,TASKPRIO_COAP);
 }
-
+// void uneig_reboot_cb(opentimer_id_t id){
+   
+//    scheduler_push_task(uneig_reset_task,TASKPRIO_COAP);
+// }
+// void uneig_reset_task(void) {
+  
+//      SysCtrlReset();
+// }
 void usaki_buzz_task_cb(){
 
   // periodically low/high to PC2
@@ -227,6 +249,28 @@ void uinject_new_receive(OpenQueueEntry_t* msg) {
 
    rcv_cmd = pkt->cmdType;
    switch(rcv_cmd){
+      // case UINJECT_RESET:
+      //   SysCtrlReset();
+      // break;
+      // case  UINJECT_FORCE_DESYNC:
+      //   uinject_new_vars.rtnTimerId = opentimers_start(
+      //         5000,
+      //         TIMER_ONESHOT,TIME_MS,
+      //         uneig_reboot_cb
+      //       );
+      //   radio_desync();     
+      //   leds_debug_toggle();
+      // break;
+      // case UINJECT_ROOT_ALIVE:
+      //   uinj_set();
+      //   leave_root_cnt = 0;
+      //   leds_debug_toggle();
+      //   uart_writeByte('C');
+      //   uart_writeByte('B');
+      //   uart_writeByte('u');
+      //   uart_writeByte('1');
+      // break;
+
       case UINJECT_GET_INFO:
       break;
       case UINJECT_SET_PARENTS:
@@ -432,5 +476,15 @@ void uinject_new_task_cb() {
    // send out packet   
    if ((openudp_send(pkt))==E_FAIL) 
       openqueue_freePacketBuffer(pkt);
+
+   // if (leave_root_cnt > LEAVE_ROOT_THEN_REBOOT){
+   //        uinject_new_vars.rtnTimerId = opentimers_start(
+   //              TIME_DESYNC_TO_REBOOT,
+   //              TIMER_ONESHOT,TIME_MS,
+   //              uneig_reboot_cb
+   //            );
+   //        radio_desync();     
+   //   }
 }
+
 

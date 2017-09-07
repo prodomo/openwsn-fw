@@ -85,6 +85,8 @@ void                radio_getReceivedFrame(uint8_t* bufRead,
 // interrupt handlers
 kick_scheduler_t    radio_isr(void);
 
+// void radio_desync(void);
+
 /**
 \}
 \}

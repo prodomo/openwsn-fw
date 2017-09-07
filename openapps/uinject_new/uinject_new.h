@@ -5,7 +5,7 @@
 #include "opentimers.h"
 
 //=========================== variables =======================================
-#define UINJECT_NEW_PERIOD  40000
+#define UINJECT_NEW_PERIOD  45000
 #define PAYLOADLEN 19
 #define UHURRICANEPAYLOADLEN      49
 
@@ -16,6 +16,8 @@
 #define UINJECT_CODE_MASK_WITHRSSI   6
 #define USE_YYS_TOPOLOGY
 
+// #define LEAVE_ROOT_THEN_REBOOT 4  // this value multiply with uinject period (45s)
+// #define TIME_DESYNC_TO_REBOOT 30000
 
 typedef struct {
    bool                 needAck;

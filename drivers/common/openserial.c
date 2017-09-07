@@ -478,13 +478,25 @@ void openserial_stop() {
                         }else{
                             cellType = CELLTYPE_RX;
                         }
-                        schedule_addActiveSlot(
-                            slotOffset,                    // slot offset
-                            cellType,                     // type of slot
-                            FALSE,                                 // shared?
-                            channelOffset,                                     // channel offset
-                            &temp_neighbor                         // neighbor
-                        );
+
+                        for(int k=0; k<5; k++)
+                        {
+                            schedule_addActiveSlot(
+                                slotOffset,                    // slot offset
+                                cellType,                     // type of slot
+                                FALSE,                                 // shared?
+                                channelOffset,                                     // channel offset
+                                &temp_neighbor                         // neighbor
+                            );
+
+                        }
+                        // schedule_addActiveSlot(
+                        //     slotOffset,                    // slot offset
+                        //     cellType,                     // type of slot
+                        //     FALSE,                                 // shared?
+                        //     channelOffset,                                     // channel offset
+                        //     &temp_neighbor                         // neighbor
+                        // );
                     }
                 }
                 break;

@@ -15,7 +15,7 @@
 #include "my_spi.h"
 #include <headers/hw_memmap.h>
 //=========================== variables =======================================
-#define USAKI_PERIOD  10000
+#define USAKI_PERIOD  8000
 // #define PAYLOADLEN 19
 usaki_vars_t usaki_vars;
 uint16_t usaki_pulse_cnt=0;
