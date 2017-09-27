@@ -22,8 +22,9 @@
 //=========================== defines =========================================
 
 /// inter-packet period (in ms)
-#define CREPORTASNPERIOD  20000
-#define PAYLOADLEN      22
+#define CREPORTASN_PERIOD  20000
+#define CREPORTASN_EMERGENCY_PERIOD  2000
+#define PAYLOADLEN      23
 
 const uint8_t creportasn_path0[] = "reportasn";
 
@@ -62,13 +63,27 @@ void creportasn_init() {
    
    opencoap_register(&creportasn_vars.desc);
    creportasn_vars.timerId    = opentimers_create();
-   opentimers_scheduleIn(
-     creportasn_vars.timerId, 
-     CREPORTASNPERIOD, 
-     TIME_MS, 
-     TIMER_PERIODIC,
-     creportasn_timer_cb
-   );
+
+   // hardcode for emergency data duration
+   if(idmanager_getMyID(ADDR_64B)->addr_64b[7] == 0xde || idmanager_getMyID(ADDR_64B)->addr_64b[7] == 0xf6){
+     creportasn_vars.isEmergency = true;
+     opentimers_scheduleIn(
+       creportasn_vars.timerId, 
+       CREPORTASN_EMERGENCY_PERIOD, 
+       TIME_MS, 
+       TIMER_PERIODIC,
+       creportasn_timer_cb
+     );
+   }else{
+     creportasn_vars.isEmergency = false;
+     opentimers_scheduleIn(
+       creportasn_vars.timerId, 
+       CREPORTASN_PERIOD, 
+       TIME_MS, 
+       TIMER_PERIODIC,
+       creportasn_timer_cb
+     );
+   }
 
 }
 
@@ -102,7 +117,11 @@ void creportasn_task_cb() {
       return;
    }
 
-   openqueue_removeAllCreatedBy(COMPONENT_CREPORTASN);
+   // Don't remove emergency data
+   if(creportasn_vars.isEmergency == FALSE){
+    openqueue_removeAllCreatedBy(COMPONENT_CREPORTASN);
+   }
+   
 
    // create a CoAP RD packet
    pkt = openqueue_getFreePacketBuffer(COMPONENT_CREPORTASN);
@@ -160,6 +179,8 @@ void creportasn_task_cb() {
    pkt->payload[20] = creportasn_vars.lastCallbackSequence;
 
    pkt->payload[21] = parentRssi;
+
+   pkt->payload[22] = creportasn_vars.isEmergency;
    
    packetfunctions_reserveHeaderSize(pkt,1);
    pkt->payload[0] = COAP_PAYLOAD_MARKER;
@@ -184,7 +205,11 @@ void creportasn_task_cb() {
    
    //pkt->l2_frameType = IEEE154_TYPE_SENSED_DATA;
 
-   pkt->l3_trafficClass = TRAFFIC_CLASS_PRIORITY;
+   if(creportasn_vars.isEmergency) {
+    pkt->l3_trafficClass = TRAFFIC_CLASS_EMERGENCY;
+   }else{
+    pkt->l3_trafficClass = TRAFFIC_CLASS_PRIORITY;
+   }
 
    // send
    outcome = opencoap_send(
