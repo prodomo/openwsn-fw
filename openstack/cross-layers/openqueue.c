@@ -203,6 +203,7 @@ OpenQueueEntry_t* openqueue_macGetDataPacket(open_addr_t* toNeighbor) {
    DISABLE_INTERRUPTS();
 
    uint8_t smallestTC = 100;
+   int8_t  largestTC  = -1;
    uint8_t foundIndex = 100;
     // first to look the sixtop RES packet
 
@@ -254,10 +255,10 @@ OpenQueueEntry_t* openqueue_macGetDataPacket(open_addr_t* toNeighbor) {
       for (i=0;i<QUEUELENGTH;i++) {
          if (openqueue_vars.queue[i].owner==COMPONENT_SIXTOP_TO_IEEE802154E &&
             packetfunctions_sameAddress(toNeighbor,&openqueue_vars.queue[i].l2_nextORpreviousHop) &&
-            openqueue_vars.queue[i].l3_trafficClass < smallestTC
+            openqueue_vars.queue[i].l3_trafficClass > largestTC
           ) {
             foundIndex = i;
-            smallestTC = openqueue_vars.queue[i].l3_trafficClass;
+            largestTC = openqueue_vars.queue[i].l3_trafficClass;
          }
       }
       if (foundIndex != 100) {

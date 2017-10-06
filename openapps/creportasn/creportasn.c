@@ -116,11 +116,37 @@ void creportasn_task_cb() {
                             (errorparameter_t)0);
       return;
    }
+   // hardcode for emergency data duration
+   // if(idmanager_getMyID(ADDR_64B)->addr_64b[7] == 0xde || idmanager_getMyID(ADDR_64B)->addr_64b[7] == 0xf6){
+   //  if(creportasn_vars.creportasn_sequence == 0){
+   //    if(creportasn_vars.isEmergency == true){
+   //      // Switch to normal
+   //      creportasn_vars.isEmergency = false;
+   //      opentimers_scheduleIn(
+   //       creportasn_vars.timerId, 
+   //       CREPORTASN_PERIOD, 
+   //       TIME_MS, 
+   //       TIMER_PERIODIC,
+   //       creportasn_timer_cb
+   //     );
+   //    }else{
+   //      // Switch to emergency
+   //      creportasn_vars.isEmergency = true;
+   //      opentimers_scheduleIn(
+   //       creportasn_vars.timerId, 
+   //       CREPORTASN_EMERGENCY_PERIOD, 
+   //       TIME_MS, 
+   //       TIMER_PERIODIC,
+   //       creportasn_timer_cb
+   //     );
+   //    }
+   //  }
+   // }
 
    // Don't remove emergency data
-   if(creportasn_vars.isEmergency == FALSE){
+   // if(creportasn_vars.isEmergency == FALSE && FALSE){
     openqueue_removeAllCreatedBy(COMPONENT_CREPORTASN);
-   }
+   // }
    
 
    // create a CoAP RD packet
