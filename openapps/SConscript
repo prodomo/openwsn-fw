@@ -22,7 +22,7 @@ if localEnv['board']=='python':
         'cexample',
         'cstorm',
         'cgreen',
-        'creportasn'
+        'creportasn',
     ]
 
 # additional apps the user wants to build

@@ -120,6 +120,7 @@ else:
             os.path.join('#','openapps','userialbridge'),
             os.path.join('#','openapps','cgreen'),
             os.path.join('#','openapps','creportasn'),
+            os.path.join('#','openapps','emergency'),
             os.path.join('#','openapps','uexpiration'),
             os.path.join('#','openapps','uexpiration_monitor'),
         ],

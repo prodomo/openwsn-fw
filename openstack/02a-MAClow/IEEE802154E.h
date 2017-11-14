@@ -15,10 +15,15 @@
 
 //=========================== debug define ====================================
 
-//=========================== static ==========================================
+// =========================== static ==========================================
+// static const uint8_t chTemplate_default[] = {
+//    3, 4, 5, 8, 9, 10, 14, 15};
 static const uint8_t chTemplate_default[] = {
    5,6,12,7,15,4,14,11,8,0,1,2,13,3,9,10
 };
+// static const uint8_t chTemplate_default[] = {
+//    4, 9, 14, 15
+// };
 
 // refer to RFC8180: https://tools.ietf.org/html/rfc8180#appendix-A.1
 // ASN and join Metric are replaced later when sending an EB
@@ -38,7 +43,7 @@ static const uint8_t ebIEsBytestream[] = {
 #define EB_IE_LEN                   28
 
 #define NUM_CHANNELS                16 // number of channels to channel hop on
-#define SYNCHRONIZING_CHANNEL       26 // channel the mote listens on to synchronize (physical channel)
+#define SYNCHRONIZING_CHANNEL       20 // channel the mote listens on to synchronize (physical channel)
 #define TXRETRIES                    3 // number of MAC retries before declaring failed
 #define TX_POWER                    31 // 1=-25dBm, 31=0dBm (max value)
 #define RESYNCHRONIZATIONGUARD       5 // in 32kHz ticks. min distance to the end of the slot to successfully synchronize

@@ -17,6 +17,7 @@
 #include "creportasn.h"
 #include "cexample.h"
 #include "cstorm.h"
+#include "emergency.h"
 // UDP
 #include "uecho.h"
 #include "uinject.h"
@@ -46,6 +47,7 @@ void openapps_init(void) {
    rrt_init();
 
    creportasn_init();
+   emergency_init();
    
    // UDP
    uecho_init();

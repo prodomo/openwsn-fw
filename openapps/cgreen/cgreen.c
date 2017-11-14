@@ -139,6 +139,14 @@ owerror_t cgreen_receive(OpenQueueEntry_t* msg,
                channelOffset,                                     // channel offset
                &temp_neighbor                         // neighbor
             );
+            //for chunk size 2
+            // schedule_addActiveSlot(
+            //    slotOffset+1,                    // slot offset
+            //    cellType,                     // type of slot
+            //    FALSE,                                 // shared?
+            //    channelOffset,                                     // channel offset
+            //    &temp_neighbor                         // neighbor
+            // );
          }
          
          msg->payload                     = &(msg->packet[127]);

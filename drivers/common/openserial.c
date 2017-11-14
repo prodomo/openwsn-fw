@@ -492,6 +492,14 @@ void openserial_stop() {
                             channelOffset,                                     // channel offset
                             &temp_neighbor                         // neighbor
                         );
+                        //for chunk size 2
+                        // schedule_addActiveSlot(
+                        //     slotOffset+1,                    // slot offset
+                        //     cellType,                     // type of slot
+                        //     FALSE,                                 // shared?
+                        //     channelOffset,                                     // channel offset
+                        //     &temp_neighbor                         // neighbor
+                        // );
                     }
                 }
                 break;

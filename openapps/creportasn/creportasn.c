@@ -23,7 +23,7 @@
 
 /// inter-packet period (in ms)
 #define CREPORTASN_PERIOD  20000
-#define CREPORTASN_EMERGENCY_PERIOD  2000
+// #define CREPORTASN_EMERGENCY_PERIOD  2000
 #define PAYLOADLEN      23
 
 const uint8_t creportasn_path0[] = "reportasn";
@@ -65,16 +65,16 @@ void creportasn_init() {
    creportasn_vars.timerId    = opentimers_create();
 
    // hardcode for emergency data duration
-   if(idmanager_getMyID(ADDR_64B)->addr_64b[7] == 0xde || idmanager_getMyID(ADDR_64B)->addr_64b[7] == 0xf6){
-     creportasn_vars.isEmergency = true;
-     opentimers_scheduleIn(
-       creportasn_vars.timerId, 
-       CREPORTASN_EMERGENCY_PERIOD, 
-       TIME_MS, 
-       TIMER_PERIODIC,
-       creportasn_timer_cb
-     );
-   }else{
+   // if(idmanager_getMyID(ADDR_64B)->addr_64b[7] == 0xde || idmanager_getMyID(ADDR_64B)->addr_64b[7] == 0xf6){
+   //   creportasn_vars.isEmergency = true;
+   //   opentimers_scheduleIn(
+   //     creportasn_vars.timerId, 
+   //     CREPORTASN_EMERGENCY_PERIOD, 
+   //     TIME_MS, 
+   //     TIMER_PERIODIC,
+   //     creportasn_timer_cb
+   //   );
+   // }else{
      creportasn_vars.isEmergency = false;
      opentimers_scheduleIn(
        creportasn_vars.timerId, 
@@ -83,7 +83,7 @@ void creportasn_init() {
        TIMER_PERIODIC,
        creportasn_timer_cb
      );
-   }
+   // }
 
 }
 
